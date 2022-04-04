@@ -4,17 +4,18 @@ import { auth } from '../firebase';
 
 const Login = () => {
     const [email, setEmail] = useState('')
-    const [pass, setPass] = useState('')
+    const [password, setPassword] = useState('')
 
-    const hadleSingUp = () =>{
+    const handleSignUp = () => {
         auth
-        .createUserWithEmailAndPassword(email,pass)
-        .then(userCredentials => {
-            const user = userCredentials.user;
-            console.log(user.email);
-        })
-        .catch(error => alert(error.message))
+            .createUserWithEmailAndPassword(email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                console.log('Registered with:', user.email);
+            })
+            .catch(error => alert(error.message))
     }
+
 
     return (
 
@@ -32,13 +33,13 @@ const Login = () => {
                 <TextInput
                     placeholder="Correo"
                     defaultValue= {email}
-                    onChanceText ={text => setEmail(text) } 
+                    onChangeText={text => setEmail(text)}
                     style={styles.input}
                 />
                 <TextInput
                     placeholder="Contraseña"
-                    defaultValue= {pass}
-                    onChanceText ={text => setPass(text)} 
+                    value={password}
+                    onChangeText={text => setPassword(text)}
                     style={styles.input}
                     secureTextEntry
                 />
@@ -52,7 +53,7 @@ const Login = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={hadleSingUp}
+                    onPress={handleSignUp}
                     style={[styles.button, styles.buttonSecundario]}>
                     <Text style={styles.buttonSecundarioTexto}>Regístrarse</Text>
                 </TouchableOpacity>
