@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/core'
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image } from 'react-native'
 import { auth } from '../firebase';
 
@@ -6,14 +7,37 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.replace("Home")
+            }
+        })
+
+        return unsubscribe
+    }, [])
+
     const handleSignUp = () => {
         auth
             .createUserWithEmailAndPassword(email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
-                console.log('Registered with:', user.email);
+                console.log('Registrado con :', user.email);
             })
             .catch(error => alert(error.message))
+    }
+
+    const handleLogin = () => {
+        auth
+            .signInWithEmailAndPassword(email,password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                console.log('Logeado con:', user.email);
+            })
+            .catch(error => alert(error.message))
+
     }
 
 
@@ -47,7 +71,7 @@ const Login = () => {
 
             <View style={styles.buttonContenedor}>
                 <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={handleLogin}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Iniciar Sesión</Text>
                 </TouchableOpacity>
@@ -58,6 +82,12 @@ const Login = () => {
                     <Text style={styles.buttonSecundarioTexto}>Regístrarse</Text>
                 </TouchableOpacity>
 
+            </View>
+            <View style={styles.imgcont2}>
+                <Image
+                    style={styles.img2}
+                    source={require('../sources/Images/BOTTOMAPP.png')}
+                />
             </View>
         </KeyboardAvoidingView>
     )
@@ -79,6 +109,19 @@ const styles = StyleSheet.create({
         width: 300,
         height:100,
     
+    },
+
+    imgcont2: {
+        flexDirection: "row",
+        flex: 1,
+        alignItems: "flex-end",
+        position: "relative"
+                
+    },
+    img2: {
+        flex: 1,
+        height: 300,
+        
     },
 
     inputContenedor:{
