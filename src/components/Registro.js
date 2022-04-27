@@ -1,10 +1,10 @@
 import React from 'react'
-import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable } from 'react-native'
+import { Text } from 'react-native'
 
-export const Registro = () => {
+const Registro = () => {
   return (
-    <Text>
-      Hola
-    </Text>
+    <Text>Hola</Text>
   )
 }
+
+export default Registro

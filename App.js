@@ -63,11 +63,11 @@ const App = () => {
                         >
                             <Registro
                                 modalRegistro={modalRegistro}
+                                setModalRegistro={setModalRegistro}
                             />
 
                         </Modal>
-                        
-                    ) }
+                    )}
                     
                 </View>
 
