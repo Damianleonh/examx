@@ -81,6 +81,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
     container:{
+        marginTop:30,
         justifyContent: 'flex-end',
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height
