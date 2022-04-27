@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
+import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Registro from './src/components/Registro'
 
 const App = () => {
@@ -11,11 +12,6 @@ const App = () => {
             <Image
                 style={styles.imagen}
                 source={ require('./src/Images/logo.jpg') }
-            />
-
-            <TextInput
-                placeholder='Correo'
-                keyboardType='email-address'
             />
 
             {/* Inputs y botones */}
@@ -107,6 +103,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius:10,
         alignItems:'center',
+        marginTop: 40
     },
 
     button2:{
@@ -114,7 +111,8 @@ const styles = StyleSheet.create({
         width: 200,
         padding: 15,
         borderRadius:10,
-        alignItems:'center'
+        alignItems:'center',
+        marginTop: 20
     },
 
     buttonText:{
@@ -130,7 +128,7 @@ const styles = StyleSheet.create({
     },
 
     contenedorBotones:{
-
+        alignItems: 'center'
     }
 })
 
