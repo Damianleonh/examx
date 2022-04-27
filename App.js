@@ -4,7 +4,7 @@ import Registro from './src/components/Registro'
 
 const App = () => {
 
-    const { modalRegistro, setModalRegistro } = useState(false)
+    const [ modalRegistro, setModalRegistro ] = useState(false)
 
     return (
         <SafeAreaView>
@@ -35,6 +35,8 @@ const App = () => {
 
                 {/* Contenedor de botones */}
                 <View style={styles.contenedorBotones}>
+
+                    {/* Boton iniciar sesión */}
                     <Pressable
                         style={styles.button}
                     >
@@ -43,9 +45,10 @@ const App = () => {
                         </Text>
                     </Pressable>
 
+                    {/* Boton registro */}
                     <Pressable
                         style={styles.button2}
-                        onPress= { () => setModalRegistro(true)}
+                        onPress= { () => setModalRegistro(!modalRegistro)}
                     >
                         <Text style={styles.buttonText2}>
                             Registrate
@@ -54,10 +57,12 @@ const App = () => {
 
 
                     { modalRegistro && (
-                        <Modal>
+                        <Modal
+                            animationType='slide'
+                            visible={modalRegistro}
+                        >
                             <Registro
                                 modalRegistro={modalRegistro}
-                                setModalRegistro={setModalRegistro}
                             />
 
                         </Modal>
