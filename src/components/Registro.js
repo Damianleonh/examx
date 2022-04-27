@@ -6,7 +6,7 @@ const Registro = ({ modalRegistro,setModalRegistro} ) => {
     <SafeAreaView>
       {/* Boton cerrar modal*/}
       <Pressable
-
+      style={styles}
       >
         <Text>Volver</Text>
       </Pressable>
@@ -27,6 +27,7 @@ const Registro = ({ modalRegistro,setModalRegistro} ) => {
         <TextInput
           style={styles.input}
           placeholder='Contrasena'
+          secureTe
         />
 
 
