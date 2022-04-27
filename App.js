@@ -10,18 +10,17 @@ const App = () => {
     return (
         <SafeAreaView style={styles.container}>
 
-            <Image
-                style={styles.imagen}
-                source={ require('./src/Images/logo.jpg') }
-            />
 
             {/* Inputs y botones */}
             <View style={styles.contenedorBtnInputs}>
+                <Image
+                    style={styles.imagen}
+                    source={ require('./src/Images/logo.jpg') }
+                />
                 <TextInput
                     style={styles.input}
                     placeholder='Correo'
                     keyboardType='email-address'
-                    secu
                 />
 
                 <TextInput
@@ -71,13 +70,10 @@ const App = () => {
 
             </View>
 
-            {/* Ultima imagen */}
-            <KeyboardAvoidingView style={styles.contenedorImgBottom}>
-                <Image
-                    style={styles.imgBottom}
-                    source={ require('./src/Images/BOTTOMAPP.png')}
-                />
-            </KeyboardAvoidingView>
+            <Image
+                style={styles.imgBottom}
+                source={ require('./src/Images/BOTTOMAPP.png')}
+            />
 
         </SafeAreaView>
     )
@@ -85,9 +81,9 @@ const App = () => {
 
 const styles = StyleSheet.create({
     container:{
+        justifyContent: 'flex-end',
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: '#0ff'
+        height: Dimensions.get('window').height
     },
 
     imagen:{
@@ -97,20 +93,13 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     
-    
-    contenedorImgBottom:{
-        // backgroundColor: '#ff0',
-        width: '100%',
-        height: '100%',
-    },
-    
     imgBottom:{
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        resizeMode: 'contain',
+        width: '100%',
+        height: 300
     },
 
     input:{ 
+        marginHorizontal: 30,
         paddingHorizontal:15,
         paddingVertical: 10,
         borderRadius:10,
@@ -120,7 +109,9 @@ const styles = StyleSheet.create({
     },
 
     contenedorBtnInputs:{
-        marginHorizontal: 30
+        position: 'absolute',
+        top: 0,
+        width: Dimensions.get('window').width,
     },
 
     button:{
