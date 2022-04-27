@@ -1,15 +1,16 @@
 import React from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
+import {Picker} from '@react-native-picker/picker';
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
   return (
     <SafeAreaView>
 
-
       {/* Boton cerrar modal*/}
       <Pressable
         style={styles.btnRegresar}
-        onPress={() => setModalRegistro(!modalRegistro)}
+        onPress={() => setModalRegistro(!modalRegistro)
+        }
       >
         <Text
           style={styles.textoBtnRegresar}
@@ -32,15 +33,23 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
 
         <TextInput
           style={styles.input}
-          placeholder='Contrasena'
+          placeholder='Contraseña'
           secureTextEntry='true'
         />
         <TextInput
           style={styles.input}
-          placeholder='Repetir Csontrasena'
+          placeholder='Repetir Contraseña'
           secureTextEntry='true'
         />
+         <TextInput
+          style={styles.input}
+          placeholder='Nombre/s'
+        />
 
+         <TextInput
+          style={styles.input}
+          placeholder='Apellidos'
+        />
 
         {/* Contenedor de botones */}
         <View style={styles.contenedorBotones}>
@@ -53,11 +62,11 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
               Registrate
             </Text>
           </Pressable>
-
-
         </View>
-
       </View>
+      
+
+      
 
       {/* Ultima imagen */}
       <Image
