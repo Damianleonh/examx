@@ -1,7 +1,10 @@
-import React from 'react'
-import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable } from 'react-native'
+import React, { useState } from 'react'
+import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
 
 const App = () => {
+
+    const { modalRegistro, setModalRegistro } = useState(false)
+
     return (
         <SafeAreaView>
 
@@ -26,21 +29,32 @@ const App = () => {
                     keyboardType='email-address'
                 />
 
-                <Pressable
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>
-                        Iniciar sesión
-                    </Text>
-                </Pressable>
 
-                <Pressable
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>
-                        Iniciar sesión
-                    </Text>
-                </Pressable>
+                {/* Contenedor de botones */}
+                <View style={styles.contenedorBotones}>
+                    <Pressable
+                        style={styles.button}
+                    >
+                        <Text style={styles.buttonText}>
+                            Iniciar sesión
+                        </Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={styles.button2}
+                        onPress= { () => setModalRegistro(true)}
+                    >
+                        <Text style={styles.buttonText2}>
+                            Registrate
+                        </Text>
+                    </Pressable>
+
+
+                    { modalRegistro && (
+                        
+                    ) }
+                    
+                </View>
 
             </View>
 
@@ -74,16 +88,34 @@ const styles = StyleSheet.create({
 
     button:{
         backgroundColor: '#0F74F2',
-        width: '100%',
+        width: 200,
+        padding: 15,
+        borderRadius:10,
+        alignItems:'center',
+    },
+
+    button2:{
+        backgroundColor: '#D9DEFB',
+        width: 200,
         padding: 15,
         borderRadius:10,
         alignItems:'center'
     },
 
     buttonText:{
-        color:'white',
+        color:'#fff',
         fontWeight: 'bold',
         fontSize: 20      
+    },
+
+    buttonText2:{
+        color:'#002060',
+        fontWeight: 'bold',
+        fontSize: 20      
+    },
+
+    contenedorBotones:{
+
     }
 
 })
