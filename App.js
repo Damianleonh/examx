@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
+import Registro from './src/components/Registro'
 
 const App = () => {
 
@@ -7,13 +8,15 @@ const App = () => {
 
     return (
         <SafeAreaView>
-
-            {/* Imagen principal */}
             <Image
                 style={styles.imagen}
-                source={ require('./sources/Images/logo.jpg') }
+                source={ require('./src/Images/logo.jpg') }
             />
 
+            <TextInput
+                placeholder='Correo'
+                keyboardType='email-address'
+            />
 
             {/* Inputs y botones */}
             <View style={styles.contenedorBtnInputs}>
@@ -51,6 +54,13 @@ const App = () => {
 
 
                     { modalRegistro && (
+                        <Modal>
+                            <Registro
+                                modalRegistro={modalRegistro}
+                                setModalRegistro={setModalRegistro}
+                            />
+
+                        </Modal>
                         
                     ) }
                     
@@ -60,7 +70,7 @@ const App = () => {
 
             {/* Ultima imagen */}
             <Image
-                source={ require('./sources/Images/BOTTOMAPP.png')}
+                source={ require('./src/Images/BOTTOMAPP.png')}
             />
 
         </SafeAreaView>
@@ -117,7 +127,6 @@ const styles = StyleSheet.create({
     contenedorBotones:{
 
     }
-
 })
 
 
