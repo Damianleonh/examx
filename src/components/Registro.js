@@ -27,7 +27,7 @@ const Registro = ({ modalRegistro,setModalRegistro} ) => {
         <TextInput
           style={styles.input}
           placeholder='Contrasena'
-          secureTe
+          
         />
 
 
