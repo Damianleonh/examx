@@ -3,6 +3,8 @@ import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable } fro
 
 export const Registro = () => {
   return (
-    <div>Registro</div>
+    <Text>
+      Hola
+    </Text>
   )
 }
