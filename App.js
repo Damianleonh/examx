@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
+import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, KeyboardAvoidingView, Dimensions } from 'react-native'
 import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Registro from './src/components/Registro'
 
@@ -8,7 +8,8 @@ const App = () => {
     const [ modalRegistro, setModalRegistro ] = useState(false)
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
+
             <Image
                 style={styles.imagen}
                 source={ require('./src/Images/logo.jpg') }
@@ -20,12 +21,13 @@ const App = () => {
                     style={styles.input}
                     placeholder='Correo'
                     keyboardType='email-address'
+                    secu
                 />
 
                 <TextInput
+                    placeholder="Contraseña"
                     style={styles.input}
-                    placeholder='Correo'
-                    keyboardType='email-address'
+                    secureTextEntry
                 />
 
 
@@ -70,18 +72,42 @@ const App = () => {
             </View>
 
             {/* Ultima imagen */}
-            <Image
-                source={ require('./src/Images/BOTTOMAPP.png')}
-            />
+            <KeyboardAvoidingView style={styles.contenedorImgBottom}>
+                <Image
+                    style={styles.imgBottom}
+                    source={ require('./src/Images/BOTTOMAPP.png')}
+                />
+            </KeyboardAvoidingView>
 
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
+    container:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        backgroundColor: '#0ff'
+    },
+
     imagen:{
         width: 200,
-        height: 100
+        height: 50,
+        marginTop: 50,
+        marginBottom: 5
+    },
+    
+    
+    contenedorImgBottom:{
+        // backgroundColor: '#ff0',
+        width: '100%',
+        height: '100%',
+    },
+    
+    imgBottom:{
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
+        resizeMode: 'contain',
     },
 
     input:{ 
