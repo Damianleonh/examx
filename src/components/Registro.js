@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
+  const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
   return (
     <SafeAreaView>
 
@@ -11,11 +12,10 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
         style={styles.btnRegresar}
         onPress={() => setModalRegistro(!modalRegistro)
         }
-      >
         <Text
           style={styles.textoBtnRegresar}
         >
-           Cancelar</Text>
+          Cancelar</Text>
       </Pressable>
 
       <Image
@@ -29,6 +29,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           style={styles.input}
           placeholder='Correo'
           keyboardType='email-address'
+          
         />
 
         <TextInput
@@ -41,12 +42,12 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           placeholder='Repetir Contraseña'
           secureTextEntry='true'
         />
-         <TextInput
+        <TextInput
           style={styles.input}
           placeholder='Nombre/s'
         />
 
-         <TextInput
+        <TextInput
           style={styles.input}
           placeholder='Apellidos'
         />
@@ -64,9 +65,16 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           </Pressable>
         </View>
       </View>
-      
 
-      
+
+      <Picker
+        selectedValue={selectedLanguage}
+        onValueChange={(itemValue, itemIndex) =>
+          setSelectedLanguage(itemValue)
+        }>
+        <Picker.Item label="Profesor" value="usuarioProfesro" />
+        <Picker.Item label="Alumno" value="usuarioAlumno" />
+      </Picker>
 
       {/* Ultima imagen */}
       <Image
@@ -133,7 +141,7 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: 'center',
     marginHorizontal: 15,
-    marginTop:10
+    marginTop: 10
   },
 
   textoBtnRegresar: {
