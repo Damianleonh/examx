@@ -32,12 +32,12 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
         <TextInput
           style={styles.input}
           placeholder='Contraseña'
-          secureTextEntry='true'
+          secureTextEntry
         />
         <TextInput
           style={styles.input}
           placeholder='Repetir Contraseña'
-          secureTextEntry='true'
+          secureTextEntry
         />
         <TextInput
           style={styles.input}
