@@ -5,7 +5,7 @@ import Registro from './src/components/Registro'
 
 const App = () => {
 
-    const [ modalRegistro, setModalRegistro ] = useState(false)
+    const [modalRegistro, setModalRegistro] = useState(false)
 
     return (
         <SafeAreaView style={styles.container}>
@@ -15,7 +15,7 @@ const App = () => {
             <View style={styles.contenedorBtnInputs}>
                 <Image
                     style={styles.imagen}
-                    source={ require('./src/Images/logo.jpg') }
+                    source={require('./src/Images/logo.jpg')}
                 />
                 <TextInput
                     style={styles.input}
@@ -45,7 +45,7 @@ const App = () => {
                     {/* Boton registro */}
                     <Pressable
                         style={styles.button2}
-                        onPress= { () => setModalRegistro(!modalRegistro)}
+                        onPress={() => setModalRegistro(!modalRegistro)}
                     >
                         <Text style={styles.buttonText2}>
                             Registrate
@@ -53,7 +53,7 @@ const App = () => {
                     </Pressable>
 
 
-                    { modalRegistro && (
+                    {modalRegistro && (
                         <Modal
                             animationType='slide'
                             visible={modalRegistro}
@@ -65,14 +65,14 @@ const App = () => {
 
                         </Modal>
                     )}
-                    
+
                 </View>
 
             </View>
 
             <Image
                 style={styles.imgBottom}
-                source={ require('./src/Images/BOTTOMAPP.png')}
+                source={require('./src/Images/BOTTOMAPP.png')}
             />
 
         </SafeAreaView>
@@ -80,72 +80,72 @@ const App = () => {
 }
 
 const styles = StyleSheet.create({
-    container:{
-        marginTop:30,
+    container: {
+        marginTop: 30,
         justifyContent: 'flex-end',
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height
     },
 
-    imagen:{
+    imagen: {
         width: 200,
         height: 50,
         marginTop: 50,
         marginBottom: 5
     },
-    
-    imgBottom:{
+
+    imgBottom: {
         width: '100%',
         height: 300
     },
 
-    input:{ 
+    input: {
         marginHorizontal: 30,
-        paddingHorizontal:15,
+        paddingHorizontal: 15,
         paddingVertical: 10,
-        borderRadius:10,
+        borderRadius: 10,
         borderColor: '#E3F4FF',
-        borderWidth:3,
+        borderWidth: 3,
         marginTop: 15
     },
 
-    contenedorBtnInputs:{
+    contenedorBtnInputs: {
         position: 'absolute',
         top: 0,
         width: Dimensions.get('window').width,
     },
 
-    button:{
+    button: {
         backgroundColor: '#0F74F2',
         width: 200,
         padding: 15,
-        borderRadius:10,
-        alignItems:'center',
+        borderRadius: 10,
+        alignItems: 'center',
         marginTop: 40
     },
 
-    button2:{
+    button2: {
         backgroundColor: '#D9DEFB',
         width: 200,
         padding: 15,
-        borderRadius:10,
-        alignItems:'center',
+        borderRadius: 10,
+        alignItems: 'center',
         marginTop: 20
     },
 
-    buttonText:{
-        color:'#fff',
+    buttonText: {
+        color: '#fff',
         fontWeight: 'bold',
-        fontSize: 20      
+        fontSize: 20
     },
 
-    buttonText2:{
-        color:'#002060',
+    buttonText2: {
+        color: '#002060',
         fontWeight: 'bold',
-        fontSize: 20      
+        fontSize: 20
     },
 
-    contenedorBotones:{
+    contenedorBotones: {
         alignItems: 'center'
     }
 })

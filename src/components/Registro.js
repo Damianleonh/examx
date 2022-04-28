@@ -6,12 +6,9 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
   const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
   return (
     <SafeAreaView>
-
-      {/* Boton cerrar modal*/}
       <Pressable
         style={styles.btnRegresar}
-        onPress={() => setModalRegistro(!modalRegistro)
-        }
+        onPress={() => setModalRegistro(!modalRegistro)}>
         <Text
           style={styles.textoBtnRegresar}
         >
@@ -29,7 +26,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           style={styles.input}
           placeholder='Correo'
           keyboardType='email-address'
-          
+
         />
 
         <TextInput
@@ -52,6 +49,20 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           placeholder='Apellidos'
         />
 
+
+        <View style={styles.containerPicker}>
+          <Picker
+          //  selectedValue={selectedLanguage}
+          //  onValueChange={(itemValue, itemIndex) =>
+          //setSelectedLanguage(itemValue)}
+          >
+            <Picker.Item label="Profesor" value="usuarioProfesor" />
+            <Picker.Item label="Alumno" value="usuarioAlumno" />
+          </Picker>
+
+        </View>
+
+
         {/* Contenedor de botones */}
         <View style={styles.contenedorBotones}>
 
@@ -67,19 +78,13 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
       </View>
 
 
-      <Picker
-        selectedValue={selectedLanguage}
-        onValueChange={(itemValue, itemIndex) =>
-          setSelectedLanguage(itemValue)
-        }>
-        <Picker.Item label="Profesor" value="usuarioProfesro" />
-        <Picker.Item label="Alumno" value="usuarioAlumno" />
-      </Picker>
 
       {/* Ultima imagen */}
       <Image
         source={require('../Images/BOTTOMAPP.png')}
       />
+
+
 
     </SafeAreaView>
   )
@@ -112,15 +117,6 @@ const styles = StyleSheet.create({
     marginTop: 40
   },
 
-  button2: {
-    backgroundColor: '#D9DEFB',
-    width: 200,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20
-  },
-
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
@@ -141,17 +137,18 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: 'center',
     marginHorizontal: 15,
-    marginTop: 10
   },
 
   textoBtnRegresar: {
     color: '#0F74F2',
     fontWeight: '400',
     fontSize: 17
-  }
+  },
 
-
-
+  containerPicker: {
+    padding: 15,
+    marginBottom:40
+  },
 })
 
 export default Registro
