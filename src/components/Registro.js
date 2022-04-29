@@ -79,7 +79,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
             )}
           >
             <Text style={styles.buttonText}>
-              Registrate
+              Registrate {':)'}
             </Text>
           </Pressable>
         </View>
