@@ -8,6 +8,7 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+firebase.js
 web-build/
 
 # macOS

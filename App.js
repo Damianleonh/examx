@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, KeyboardAvoidingView, Dimensions } from 'react-native'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import Registro from './src/components/Registro'
 
 const App = () => {
