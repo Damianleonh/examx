@@ -1,9 +1,19 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker';
+import { savePersons } from '../../aplication/api'
+
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
+  
   const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
+
+  const [guardarUsuarios, setGuardarUsuarios] = useState(null);
+
+  const guardarUsiario = () => {
+    savePersons(guardarUsuarios)
+  }
+
   return (
     <SafeAreaView>
       <Pressable
@@ -42,6 +52,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
         <TextInput
           style={styles.input}
           placeholder='Nombre/s'
+          onChangeText={(text) => setGuardarUsuarios(text)}
         />
 
         <TextInput
@@ -67,16 +78,9 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
         {/* Contenedor de botones */}
         <View style={styles.contenedorBotones}>
 
-          {/* Boton iniciar sesión */}
           <Pressable
             style={styles.button}
-            onPress = { () => (
-              Alert.alert("Error", "Error al registrar",[
-                {
-                  text: "Ok"
-                }
-              ])
-            )}
+            onPress={() => guardarUsiario()}
           >
             <Text style={styles.buttonText}>
               Registrate
@@ -155,13 +159,13 @@ const styles = StyleSheet.create({
 
   containerPicker: {
     padding: 15,
-    marginBottom:40
+    marginBottom: 40
   },
 
-  tipouserTxt:{
+  tipouserTxt: {
     fontSize: 18,
     position: 'relative',
-    top:40,
+    top: 40,
     left: 33
   }
 })
