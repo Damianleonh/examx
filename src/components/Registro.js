@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal } from 'react-native'
+import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker';
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
@@ -51,6 +51,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
 
 
         <View style={styles.containerPicker}>
+          <Text style={styles.tipouserTxt}>Selecciona el tipo de usuario:</Text>
           <Picker
           //  selectedValue={selectedLanguage}
           //  onValueChange={(itemValue, itemIndex) =>
@@ -69,6 +70,13 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
           {/* Boton iniciar sesión */}
           <Pressable
             style={styles.button}
+            onPress = { () => (
+              Alert.alert("Error", "Error al registrar",[
+                {
+                  text: "Ok"
+                }
+              ])
+            )}
           >
             <Text style={styles.buttonText}>
               Registrate
@@ -149,6 +157,13 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom:40
   },
+
+  tipouserTxt:{
+    fontSize: 18,
+    position: 'relative',
+    top:40,
+    left: 33
+  }
 })
 
 export default Registro
