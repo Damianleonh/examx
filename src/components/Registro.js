@@ -1,19 +1,28 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker';
-import { savePersons } from '../../aplication/api'
+import { db } from '../../Core/Config'
+import { setDoc } from 'firebase/firestore';
 
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
-  
-  const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
 
-  const [guardarUsuarios, setGuardarUsuarios] = useState(null);
 
-  const guardarUsiario = () => {
-    savePersons(guardarUsuarios)
+  const Create = () => {
+    const myDoc = doc(db, 'Coleccion', 'Documento')
+    const docData = {
+      'nombre': 'prueba'
+    }
+    setDoc(myDoc, docData).then(() => {
+      alert('documento creado')
+    }).catch((err) => {
+      alert(err.message)
+    })
+
+
   }
 
+  const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
   return (
     <SafeAreaView>
       <Pressable
@@ -80,7 +89,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
 
           <Pressable
             style={styles.button}
-            onPress={() => guardarUsiario()}
+            onPress={() => Create()}
           >
             <Text style={styles.buttonText}>
               Registrate
