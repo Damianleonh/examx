@@ -37,21 +37,6 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
 
     const app = initializeApp(firebaseConfig)
     const auth = getAuth(app)
-    const db = firebase.firestore()
-
-    const saveNewUser = async () => {
-
-        try {
-          await app.db.collection("users").add({
-            carro: "Hola"
-          });
-  
-        } catch (error) {
-          console.log(error)
-        }
-    }
-
-    saveNewUser()
 
     createUserWithEmailAndPassword(auth, correo, password)
         .then((userCredential)=>{
