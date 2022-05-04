@@ -66,6 +66,7 @@ const Login = () => {
                 placeholder='Correo'
                 keyboardType='email-address'
                 autoComplete='email'
+                textContentType='emailAdress'
                 onChangeText={ (txt) => { setCorreo(txt) }}
                 placeholderTextColor = "#a0a0a0" 
             />

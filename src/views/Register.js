@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 import { Text, SafeAreaView, View, Image, TextInput, StyleSheet, Pressable, Modal, Alert } from 'react-native'
 import { Picker } from '@react-native-picker/picker';
+
+//Firebase
 import { addDoc, collection, doc, setDoc } from "firebase/firestore"
 import { db } from '../../firebase-config';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig } from '../../firebase-config';
 
 const Registro = ({ modalRegistro, setModalRegistro }) => {
 
@@ -14,6 +19,8 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
   const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
 
   function crearUsuario() {
+
+    //VALIDACIONES
     if ([correo, password, repassword, nombre, apellido, seleccionTipoUsuario].includes('')) {
       Alert.alert(
         'Error',
@@ -30,6 +37,46 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
       return
     }
 
+    //Crear usuario en Authentication
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app)
+
+    createUserWithEmailAndPassword(auth, correo, password)
+        .then((userCredential)=>{
+            Alert.alert(
+              'Mensaje',
+              'Cuenta creada correctamente'
+            )
+            const user = userCredential.user
+            console.log(user)
+
+        })
+        .catch(err => {
+            if (err.code === 'auth/invalid-email') {
+              Alert.alert(
+                'Error',
+                'El correo es invalido'
+              )
+            }else if(err.code === 'auth/weak-password' ){
+              Alert.alert(
+                'Error',
+                'La contraseña es debil'
+              )
+            }else if(err.code === 'auth/email-already-in-use' ){
+              Alert.alert(
+                'Error',
+                'La cuenta ya existe'
+              )
+            }else{
+              Alert.alert(
+                'Error',
+                'Error al registrar', err
+              )
+            }
+            console.log(err)
+            return
+        })
+
     //ENVIAR A FIRESTORE
     addDoc(collection(db, "Usuarios"), {
       correo: correo,
@@ -37,16 +84,10 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
       nombreUsuario: nombre + " " + apellido,
       tipo:seleccionTipoUsuario + ""
     }).then(() => {
-      Alert.alert(
-        'Registrado',
-        'El usuario ha quedado correctamente registrado'
-      )
+      console.log("Usuario registrado en firestore")
       setModalRegistro(!modalRegistro)
     }).catch((error) => {
-      Alert.alert(
-        'Error',
-        'Existio un error con la comunicacion con la base de datos'
-      )
+      console.log("Error al registrar en firestore: ",error)
     })
 
   }
