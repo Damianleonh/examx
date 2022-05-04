@@ -26,6 +26,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
       Alert.alert(
         'Error',
         'Las contraseñas no son iguales'
+<<<<<<< HEAD
       )
       return
     }
@@ -45,6 +46,46 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
       //ERROR
     })
 
+=======
+    )
+    return
+  }
+
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app)
+
+    createUserWithEmailAndPassword(auth, correo, password)
+        .then((userCredential)=>{
+            console.log("Cuenta creada correctamente")
+            const user = userCredential.user
+            console.log(user)
+
+        })
+        .catch(err => {
+            if (err.code === 'auth/invalid-email') {
+              Alert.alert(
+                'Error',
+                'El correo es invalido'
+              )
+            }else if(err.code === 'auth/weak-password' ){
+              Alert.alert(
+                'Error',
+                'La contraseña es debil'
+              )
+            }else if(err.code === 'auth/email-already-in-use' ){
+              Alert.alert(
+                'Error',
+                'La cuenta ya existe'
+              )
+            }else{
+              Alert.alert(
+                'Error',
+                'Error al registrar', err
+              )
+            }
+            console.log(err)
+        })
+>>>>>>> 409e3ef83cd8df59407da1dd197d86d551e259ec
   }
 
   return (
