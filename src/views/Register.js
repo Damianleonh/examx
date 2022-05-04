@@ -41,8 +41,12 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
         'Registrado',
         'El usuario ha quedado correctamente registrado'
       )
+      setModalRegistro(!modalRegistro)
     }).catch((error) => {
-      //ERROR
+      Alert.alert(
+        'Error',
+        'Existio un error con la comunicacion con la base de datos'
+      )
     })
 
   }
