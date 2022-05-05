@@ -54,83 +54,84 @@ const Login = () => {
     return (
         <SafeAreaView style={styles.container}>
 
+            {/* Inputs y botones */}
+            <View style={styles.contenedorBtnInputs}>
+                <Image
+                    style={styles.imagen}
+                    source={require('../img/logo.jpg')}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder='Correo'
+                    keyboardType='email-address'
+                    autoComplete='email'
+                    textContentType='emailAdress'
+                    onChangeText={ (txt) => { setCorreo(txt) }}
+                    placeholderTextColor = "#a0a0a0" 
+                />
 
-        {/* Inputs y botones */}
-        <View style={styles.contenedorBtnInputs}>
-            <Image
-                style={styles.imagen}
-                source={require('../img/logo.jpg')}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder='Correo'
-                keyboardType='email-address'
-                autoComplete='email'
-                textContentType='emailAdress'
-                onChangeText={ (txt) => { setCorreo(txt) }}
-                placeholderTextColor = "#a0a0a0" 
-            />
-
-            <TextInput
-                placeholder="Contraseña"
-                style={styles.input}
-                secureTextEntry
-                onChangeText={ (txt) => { setPassword(txt) }}
-                placeholderTextColor = "#a0a0a0" 
-            />
-
-
-            {/* Contenedor de botones */}
-            <View style={styles.contenedorBotones}>
-
-                {/* Boton iniciar sesión */}
-                <Pressable
-                    style={styles.button}
-                    onPress={ () => handleSignIn() }
-                >
-                    <Text style={styles.buttonText}>
-                        Iniciar sesión
-                    </Text>
-                </Pressable>
-
-                {/* Boton registro */}
-                <Pressable
-                    style={styles.button2}
-                    onPress={() => setModalRegistro(!modalRegistro)}
-                >
-                    <Text style={styles.buttonText2}>
-                        Registrate
-                    </Text>
-                </Pressable>
+                <TextInput
+                    placeholder="Contraseña"
+                    style={styles.input}
+                    secureTextEntry
+                    onChangeText={ (txt) => { setPassword(txt) }}
+                    placeholderTextColor = "#a0a0a0" 
+                />
 
 
-                {modalRegistro && (
-                    <Modal
-                        animationType='slide'
-                        visible={modalRegistro}
+                {/* Contenedor de botones */}
+                <View style={styles.contenedorBotones}>
+
+                    {/* Boton iniciar sesión */}
+                    <Pressable
+                        style={styles.button}
+                        onPress={ () => handleSignIn() }
                     >
-                        <Registro
-                            modalRegistro={modalRegistro}
-                            setModalRegistro={setModalRegistro}
-                        />
+                        <Text style={styles.buttonText}>
+                            Iniciar sesión
+                        </Text>
+                    </Pressable>
 
-                    </Modal>
-                )}
+                    {/* Boton registro */}
+                    <Pressable
+                        style={styles.button2}
+                        onPress={() => setModalRegistro(!modalRegistro)}
+                    >
+                        <Text style={styles.buttonText2}>
+                            Registrate
+                        </Text>
+                    </Pressable>
 
+
+                    {modalRegistro && (
+                        <Modal
+                            animationType='slide'
+                            visible={modalRegistro}
+                        >
+                            <Registro
+                                modalRegistro={modalRegistro}
+                                setModalRegistro={setModalRegistro}
+                            />
+
+                        </Modal>
+                    )}
+                </View>
             </View>
 
-        </View>
+            <Image
+                style={styles.imgBottom}
+                source={require('../img/BOTTOMAPP.png')}
+            />
 
-        <Image
-            style={styles.imgBottom}
-            source={require('../img/BOTTOMAPP.png')}
-        />
+            {/* Relleno de imagen */}
+            <View style={styles.relleno}></View>
 
-    </SafeAreaView>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
+
     container: {
         backgroundColor: '#fff',
         justifyContent: 'flex-end',
@@ -141,14 +142,24 @@ const styles = StyleSheet.create({
     imagen: {
         width: 200,
         height: 50,
-        marginTop: 50,
+        marginTop: 75,
         marginBottom: 5
     },
 
     imgBottom: {
+        marginTop: 100,
         width: '100%',
         height: 300
     },
+
+    relleno:{
+        position: 'absolute',
+        backgroundColor: "#E3F4FF",
+        width: "100%",
+        height: 40,
+        zIndex: -1,
+        bottom: 0
+    },  
 
     input: {
         marginHorizontal: 30,
