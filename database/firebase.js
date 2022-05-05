@@ -1,5 +1,7 @@
-import firebase from "firebase";
-import "firebase/firestore";
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import Constants from 'expo-constants';
 
 var firebaseConfig = {
     apiKey: "AIzaSyAcKSXFyL29ltYj_KLURVPXKeEVXNtVEfM",
@@ -12,11 +14,6 @@ var firebaseConfig = {
 };
 
 // Initialize Firebase
-fb.initializeApp(firebaseConfig);
-
-const db = fb.firestore();
-
-export default {
-  fb,
-  db
-};
+initializeApp(firebaseConfig);
+export const auth = getAuth();
+export const database = getFirestore();

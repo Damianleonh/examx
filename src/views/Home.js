@@ -1,15 +1,63 @@
 import React from 'react'
-import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet} from 'react-native'
+import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
+import { FontAwesome } from '@expo/vector-icons'
+import { signOut } from 'firebase/auth'
+import { auth } from '../../database/firebase'
+
+const onSignOut = () => {
+
+  Alert.alert(
+    "Alerta",
+    "¿Estas seguro de cerrar sesión?",
+    [
+      {
+        text: 'Cancelar',
+        onPress: () => {
+          return
+        }
+      },
+
+      {
+        text: 'Si',
+        onPress: () => {
+          signOut(auth).catch( error => {
+            Alert.alert(
+              "Error",
+              "Error al cerrar sesion"
+            )
+        
+          })
+        }
+      }
+
+    ]
+  )
+
+}
 
 const Home = () => {
   return (
     <SafeAreaView style={styles.container} >
+
+        {/* Titulo */}
         <Text style={styles.titulo}>
             Inicio
         </Text>
 
+        {/* Boton cerrar sesión */}
+        <SafeAreaView style={styles.logouticon}>
+          <FontAwesome 
+            color={"#0F74F2"}
+            borderRadius="100" 
+            size={25} 
+            name="sign-out" 
+            onPress={onSignOut}
+          />
+        </SafeAreaView>
+
+        {/* Barra de opciones */}
         <View style={styles.optionsMenu}>
 
           <Pressable style={styles.cardOpcion}>
@@ -51,13 +99,14 @@ const Home = () => {
               <Text style={styles.cardTxt}>Aplicar examen</Text>
             </LinearGradient>
           </Pressable>
-
         </View>
 
+        {/* Subtitulo examenes en curso */}
         <Text style={styles.titulo2}>
             Examenes en curso
         </Text>
 
+        {/* Lista de examenes en curso */}
         <ScrollView style={styles.scroll}
           alwaysBounceVertical={true}
         >
@@ -194,6 +243,15 @@ const styles = StyleSheet.create({
 
   scroll:{
     height: '100%'
+  },
+
+  logouticon:{
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 68,
+    right: 0
   }
 })
 
