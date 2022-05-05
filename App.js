@@ -9,8 +9,11 @@ import { auth } from "./database/firebase";
 
 //views
 import Login from "./src/views/Login"
-import Registro from "./src/views/Register"
 import Home from "./src/views/Home";
+import CrearPlantilla from "./src/views/CrearPlantilla";
+import VerPlantillas from "./src/views/VerPlantillas";
+import Alumnos from "./src/views/Alumnos";
+import AplicarExamen from "./src/views/AplicarExamen";
 
 //Navigator
 const Stack = createNativeStackNavigator()
@@ -41,6 +44,10 @@ const AppStack = () => {
   return (
     <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={ Home }/>
+      <Stack.Screen name="CrearPlantilla" component={CrearPlantilla}/>
+      <Stack.Screen name="VerPlantillas" component={VerPlantillas}/>
+      <Stack.Screen name="Alumnos" component={Alumnos}/>
+      <Stack.Screen name="AplicarExamen" component={AplicarExamen}/>
     </Stack.Navigator>
   )
 }

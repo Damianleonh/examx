@@ -37,7 +37,7 @@ const onSignOut = () => {
 
 }
 
-const Home = () => {
+const Home = ( {navigation} ) => {
   return (
     <SafeAreaView style={styles.container} >
 
@@ -60,7 +60,10 @@ const Home = () => {
         {/* Barra de opciones */}
         <View style={styles.optionsMenu}>
 
-          <Pressable style={styles.cardOpcion}>
+          <Pressable 
+            style={styles.cardOpcion}
+            onPress={() => navigation.navigate('CrearPlantilla')}
+          >
             <LinearGradient
               colors={["#8C4DE9", "#0083B0"]}
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
@@ -70,7 +73,10 @@ const Home = () => {
             </LinearGradient>
           </Pressable>
 
-          <Pressable style={styles.cardOpcion}>
+          <Pressable 
+            style={styles.cardOpcion}
+            onPress={() => navigation.navigate('VerPlantillas')}
+          >
             <LinearGradient
               colors={["#8C4DE9", "#0083B0"]}
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
@@ -80,7 +86,10 @@ const Home = () => {
             </LinearGradient>
           </Pressable>
 
-          <Pressable style={styles.cardOpcion}>
+          <Pressable 
+            style={styles.cardOpcion}
+            onPress={() => navigation.navigate('Alumnos')}
+          >
             <LinearGradient
               colors={["#8C4DE9", "#0083B0"]}
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
@@ -90,7 +99,10 @@ const Home = () => {
             </LinearGradient>
           </Pressable>
 
-          <Pressable style={styles.cardOpcion}>
+          <Pressable 
+            style={styles.cardOpcion}
+            onPress={() => navigation.navigate('AplicarExamen')}
+          >
             <LinearGradient
               colors={["#8C4DE9", "#0083B0"]}
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
