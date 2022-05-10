@@ -54,7 +54,6 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
             const myDoc = doc(db, "Usuarios", correo)
             const docData = {
               correo: correo,
-              pass: password,
               nombreUsuario: nombre + " " + apellido,
               tipo:seleccionTipoUsuario + ""
             }
