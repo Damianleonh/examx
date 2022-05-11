@@ -94,31 +94,10 @@ const CrearPlantilla = () => {
 
 
                             </View>
-                            <DropDownPicker
-                                    items={[
-                                        {label: 'Apple', value: 'apple'},
-                                        {label: 'Banana', value: 'banana'}
-                                    ]}       
-                                />
+
                             {/* Pregunta contenedor respuesta */}
                             <View style={styles.containerR}>
-                                {/* <RadioButton.Group
-                                    onValueChange={value => setOpPregunta(value)}
-                                    value={opPregunta}
-                                >
-                                    <View>
-                                    <Text>First</Text>
-                                    <RadioButton value="first" />
-                                    </View>
-                                    <View>
-                                    <Text>Second</Text>
-                                    <RadioButton value="second" />
-                                    </View>
-                                    <View>
-                                    <Text>Second</Text>
-                                    <RadioButton value="third" />
-                                    </View>
-                                </RadioButton.Group> */}
+                                
                             </View>
                         </View>
                     ))}
