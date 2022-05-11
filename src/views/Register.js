@@ -50,6 +50,21 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
             const user = userCredential.user
             console.log(user)
 
+            //ENVIAR A FIRESTORE
+            const myDoc = doc(db, "Usuarios", correo)
+            const docData = {
+              correo: correo,
+              nombreUsuario: nombre + " " + apellido,
+              tipo:seleccionTipoUsuario + ""
+            }
+
+            setDoc(myDoc, docData).then(()=>{
+              console.log("Usuario registrado en firestore");
+              setModalRegistro(!modalRegistro);
+            }).catch(error=>{
+              console.log("Error al registrar en firestore: ",error)
+            })
+
         })
         .catch(err => {
             if (err.code === 'auth/invalid-email') {
@@ -76,19 +91,6 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
             console.log(err)
             return
         })
-
-    //ENVIAR A FIRESTORE
-    addDoc(collection(db, "Usuarios"), {
-      correo: correo,
-      pass: password,
-      nombreUsuario: nombre + " " + apellido,
-      tipo:seleccionTipoUsuario + ""
-    }).then(() => {
-      console.log("Usuario registrado en firestore")
-      setModalRegistro(!modalRegistro)
-    }).catch((error) => {
-      console.log("Error al registrar en firestore: ",error)
-    })
 
   }
 
