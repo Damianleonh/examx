@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput} from "react-native";
 import { auth } from '../../database/firebase'
 import { RadioButton, Text } from 'react-native-paper';
-import DropDownPicker from "react-native-dropdown-picker";
 
 const CrearPlantilla = () => {
  
@@ -103,7 +102,7 @@ const CrearPlantilla = () => {
                                 />
                             {/* Pregunta contenedor respuesta */}
                             <View style={styles.containerR}>
-                                <RadioButton.Group
+                                {/* <RadioButton.Group
                                     onValueChange={value => setOpPregunta(value)}
                                     value={opPregunta}
                                 >
@@ -119,7 +118,7 @@ const CrearPlantilla = () => {
                                     <Text>Second</Text>
                                     <RadioButton value="third" />
                                     </View>
-                                </RadioButton.Group>
+                                </RadioButton.Group> */}
                             </View>
                         </View>
                     ))}
