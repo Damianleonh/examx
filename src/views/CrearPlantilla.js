@@ -1,66 +1,98 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput } from "react-native";
 import { auth } from '../../database/firebase'
+import ModalSelector from 'react-native-modal-selector'
+import { AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+
 import { RadioButton, Text } from 'react-native-paper';
-
 const CrearPlantilla = () => {
- 
+
+    //VARIABLE PRINCIPAL DE PREGUNTAS
+
+    const [preguntas, setPreguntas] = useState([
+        {
+            tituloPregunta: '',
+            tiempo: '',
+            incisos: {
+                inciso1:''
+            },
+            respuestaInciso: {}
+        },
+    ])
+
+
+    const agregarPregunta = () => {
+        setPreguntas([...preguntas, {
+            tituloPregunta: '',
+            tiempo: '',
+            incisos: {
+                a:'Valor 1'
+            },
+            respuestaInciso: {}
+        }])
+    }
+
+    const eliminarPregunta = (index) => {
+        const cambio = [...preguntas]
+        cambio.splice(index, 1)
+        setPreguntas(cambio)
+    }
+
+
+    //Variables del picker modal
+    let indx = 0;
+    const data = [
+        { key: indx++, section: true, label: 'Segundos' },
+        { key: indx++, label: '5 Segundos' },
+        { key: indx++, label: '10 Segundos' },
+        { key: indx++, label: '20 Segundos' },
+        { key: indx++, label: '30 Segundos' },
+        { key: indx++, label: '1 Minuto' },
+    ];
+
+    //INICIA AREA FECHA --------------------------------------------------------------
+
     useEffect(() => {
-      var date = new Date().getDate(); //Current Date
-      var month = new Date().getMonth() + 1; //Current Month
-      var year = new Date().getFullYear(); //Current Year
-      var hours = new Date().getHours(); //Current Hours
-      var min = new Date().getMinutes(); //Current Minutes
+        var date = new Date().getDate(); //Current Date
+        var month = new Date().getMonth() + 1; //Current Month
+        var year = new Date().getFullYear(); //Current Year
+        var hours = new Date().getHours(); //Current Hours
+        var min = new Date().getMinutes(); //Current Minutes
 
-      if(date<10){
-          date = "0" + date
-      }
-      if(month<10){
-          month = "0" + month
-      }
-      if(hours < 10){
-          hours = "0" + hours
-      }
-      if(min < 10){
-          min = "0" + min
-      }
+        if (date < 10) {
+            date = "0" + date
+        }
+        if (month < 10) {
+            month = "0" + month
+        }
+        if (hours < 10) {
+            hours = "0" + hours
+        }
+        if (min < 10) {
+            min = "0" + min
+        }
 
-      setDate({
-          dateDay: date + '/' + month + '/' + year,
-          dateHour: hours + ':' + min
-      }
-      );
+        setDate({
+            dateDay: date + '/' + month + '/' + year,
+            dateHour: hours + ':' + min
+        }
+        );
     }, []);
 
+    //TERMINA AREA FECHA --------------------------------------------------------------
+
     //Todos los datos del formulario
-    const [ titulo, setTitulo ] = useState("") 
-    const [ autor, setAutor ] = useState("")
-    const [ fechaCreacion, setFechaCreacion ] = useState("")
-    const [ fechaAct, setFechaAct ] = useState("")
-    const [ preguntas, setPreguntas ] = useState([{
-        titulo: "¿2+2?",
-        tiempo: 5,
-        respuestas: [
-            "5",
-            "4"
-        ]
-    }])
+    const [titulo, setTitulo] = useState("")
+    const [autor, setAutor] = useState("")
+    const [fechaCreacion, setFechaCreacion] = useState("")
+    const [fechaAct, setFechaAct] = useState("")
+
+
 
     const [date, setDate] = useState("")
-    const [ opPregunta, setOpPregunta ] = useState({})
-    // const [ plantilla, setPlantilla] = useState({
-    //     titulo: "",
-    //     autor: auth.currentUser.email,
-    //     fechaCreacion: "",
-    //     fechaActualizacion: null,
-    //     preguntas: [{
-    //         titulo: "",
-    //         tiempo: 5, //En segundos
-    //         respuestas: [
-    //         ],
-    //         repCorrecta: null //Posicion en el array de respuestas
-    //     }]
-    // });
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -69,46 +101,69 @@ const CrearPlantilla = () => {
 
                 {/* Titulos */}
                 <TextInput style={styles.txtForm}
-                    placeholder = "Titulo de la plantilla"
-                    onChangeText = {(txt) => setTitulo(txt)}
+                    placeholder="Titulo de la plantilla"
+                    onChangeText={(txt) => setTitulo(txt)}
                     placeholderTextColor="#a0a0a0"
                 />
 
                 <Text style={styles.txtFecha}>Fecha de creación: {date.dateDay} {date.dateHour}</Text>
 
                 <ScrollView
-                    alwaysBounceVertical = {false}
+                    alwaysBounceVertical={false}
                 >
-
-                    { preguntas.map((pregunta, index) => (                      
-                        <View style={styles.containerP} key={index}>
-
-                            {/* Pregunta contenedor "pregunta" */}
-                            <View style={styles.containerOps}>
-                                <TextInput 
-                                    style={styles.txtOps}
+                    {/************* AREA DE PREGUNTAS ********************/}
+                    {preguntas.map((pregunta, index) => (
+                        <View key={index} style={styles.containerPregunta}>
+                            <View style={styles.containerPreguntaA}>
+                                <TextInput
+                                    style={styles.textInputPregunta}
+                                    placeholder="Ingresa la pregunta"
                                     placeholderTextColor="#a0a0a0"
-                                    placeholder="Ingresa una pregunta"
-                                    onChangeText={ (txt) => {pregunta.titulo = txt}}
-                                />
+                                    onChangeText={(txt) => pregunta.tituloPregunta(txt)}
+                                    multiline={true}
+                                >
+                                </TextInput>
+
+                                <View style={styles.containerPreguntaSegundos}>
+                                    <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
+                                    <ModalSelector
+                                        style={styles.modalselector}
+                                        initValue="5 segundos"
+                                        cancelButtonAccessibilityLabel={'Cancelar'}
+                                        data={data}
+                                        touchableActiveOpacity={0}
+                                        // onChange={(option) => { alert(`${option.label} (${option.key}) nom nom nom`) }}
+                                        selectStyle={{ borderWidth: 0 }}
+                                        selectTextStyle={{ color: '#0083B0' }} />
+                                </View>
 
 
+                                <View style={styles.containerPreguntaBorrar}>
+                                    <Pressable
+                                    onPress={() => eliminarPregunta(index)}>
+                                        <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
+                                    </Pressable>
+                                    
+                                </View>
                             </View>
 
-                            {/* Pregunta contenedor respuesta */}
-                            <View style={styles.containerR}>
-                                
-                            </View>
+                            
+
+
                         </View>
                     ))}
-                    
-                    <Pressable style={styles.btnMas}>
-                        <Image
-                        style={{ width: 25, height: 25 }}
-                        source={require("../img/mas.png")}
-                        />
+
+                    {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
+
+
+
+
+
+                    <Pressable style={styles.btnMas}
+                        onPress={() => agregarPregunta()}>
+                        <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
                     </Pressable>
-                    
+
                 </ScrollView>
 
             </View>
@@ -121,47 +176,87 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flex: 1
     },
-    containerF:{
+    containerF: {
         marginHorizontal: 20,
         marginTop: 10,
     },
-    txtForm:{
+    txtForm: {
         fontSize: 30,
         color: "#000",
     },
-    txtFecha:{
+    txtFecha: {
         color: "#a0a0a0",
-        marginTop: 10, 
+        marginTop: 10,
         marginBottom: 20
     },
-    containerP:{
+    containerPregunta: {
         borderColor: '#D9D9D9',
         borderWidth: 1,
         borderRadius: 10,
         padding: 20,
         marginBottom: 10
+
     },
-    containerOps:{
+    textInputPregunta: {
+        width: 130,
+        marginRight: '12%'
+    },
+    containerPreguntaA: {
+        flexDirection: 'row',
+        marginBottom:5,
+        
+    },
+    containerPreguntaSegundos: {
+        borderColor: '#D9D9D9',
+        borderWidth: 1,
+        borderRadius: 10,
+        padding: 3,
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+        width: 130,
+        maxHeight: 40
+
+    },
+    containerPreguntaBorrar: {
+        borderColor: '#D9D9D9',
+        borderWidth: 1,
+        borderRadius: 10,
+        width: 30,
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        maxHeight: 40
+    },
+    modalselector: {
+        borderWidth: 0,
+        marginLeft: 5,
+        fontSize: 1
+    },
+
+    containerOps: {
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    txtOps:{
+    txtOps: {
         fontSize: 18
     },
-    txtOps2:{
-        marginLeft:110,
+    txtOps2: {
+        marginLeft: "6",
         fontSize: 18
     },
-    containerR:{
-        marginTop:20,
-        alignItems:"baseline",
+    containerR: {
+        marginTop: 20,
+        alignItems: "baseline",
         marginBottom: 20
     },
-    btnMas:{
-        marginTop:30,
-        alignItems:"center"
+    btnMas: {
+        marginTop: 30,
+        alignItems: "center"
     }
-    
+
 })
 
-export default CrearPlantilla;
+export default CrearPlantilla
