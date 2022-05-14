@@ -66,6 +66,7 @@ const AppNavigator = () => {
     );
     return unsubscribeAuth;
   }, [user]);
+  
 
   if (isLoading) {
     return (
