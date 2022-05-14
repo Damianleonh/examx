@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput, Text} from "react-native";
 import { auth } from '../../database/firebase'
-import { RadioButton, Text } from 'react-native-paper';
 
 const CrearPlantilla = () => {
  
