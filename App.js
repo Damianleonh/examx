@@ -1,92 +1,131 @@
-import React, {useState, createContext, useContext, useEffect} from "react";
-import { View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native"
-import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import React, {useState}from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+  Modal,
+  Alert
+} from 'react-native';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import CrearFormulario from './src/components/CrearFormulario';
+import MisPlantillas from './src/components/MisPlantillas';
+const App = () => {
 
-//Firebase
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./database/firebase";
+  const [modal1,setModal1] = useState(false)
+  const [modal2,setModal2] = useState(false)
+  const [plantillas, setPlantillas] = useState([])
+  const [plantilla, setPlantilla] = useState({})//extraemos id y lo buscamos
 
-//views
-import Login from "./src/views/Login"
-import Home from "./src/views/Home";
-import CrearPlantilla from "./src/views/CrearPlantilla";
-import VerPlantillas from "./src/views/VerPlantillas";
-import Alumnos from "./src/views/Alumnos";
-import AplicarExamen from "./src/views/AplicarExamen";
-
-//Navigator
-const Stack = createNativeStackNavigator()
-
-//----------------->Auth 
-const AuthenticatedUserContext = createContext({}); //Contexto usuario autenticado
-
-const AuthenticatedUserProvider = ({ children }) => { //Funcion para guardar al usuario en el contexto
-  const [user, setUser] = useState(null); 
-  return (
-      <AuthenticatedUserContext.Provider value={{ user, setUser }}>
-        {children}
-      </AuthenticatedUserContext.Provider>
-    );
-};
-
-//---------------------------
-
-const AuthStack = () => {
-  return (
-    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }} >
-      <Stack.Screen name="Login" component={ Login }/>
-    </Stack.Navigator>
+  const PlantillaEditar = id => {
+    const PlantillaEditar = plantillas.filter(plantilla=> plantilla.id=== id)
+    setPlantilla(PlantillaEditar[0])
+  } //funcion para detectar cual id estas editando
+  const EliminarPlantilla= id => {
+    Alert.alert(
+      "Eliminar plantilla",
+      "Estas seguro?, los cambios no se revertiran",
+      [
+        {text:"Cancelar"},
+        {text:"Aceptar", onPress:()=>{
+          const PlantillasActualizadas = plantillas.filter(PlantillasState => PlantillasState.id !== id)
+          setPlantillas(PlantillasActualizadas)
+        }}
+      ]
   )
-}
-
-const AppStack = () => {
-  return (
-    <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={ Home }/>
-      <Stack.Screen name="CrearPlantilla" component={CrearPlantilla}/>
-      <Stack.Screen name="VerPlantillas" component={VerPlantillas}/>
-      <Stack.Screen name="Alumnos" component={Alumnos}/>
-      <Stack.Screen name="AplicarExamen" component={AplicarExamen}/>
-    </Stack.Navigator>
-  )
-}
-
-const AppNavigator = () => {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(
-      auth,
-      async authenticatedUser => {
-        authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-        setIsLoading(false);
-      }
-    );
-    return unsubscribeAuth;
-  }, [user]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
-      </View>
-    );
   }
-
   return (
-    <NavigationContainer>
-      {user ? <AppStack /> : <AuthStack />}
-    </NavigationContainer>
-  );
-}
+    <SafeAreaView style={styles.contenedorTodo}>
+      <Pressable style={styles.btnPlantilla} onPress={()=>{setModal1(true)}}>
+        <Text style={styles.txtContenedor}>Crear{" "}
+          <Text style={styles.txtContenedor2}>formulario</Text>
+        </Text>
+      </Pressable>
+      <Pressable style={styles.btnPlantilla2} onPress={()=>{setModal2(true)}}>
+        <Text style={styles.txtContenedor}>Mis{" "}
+          <Text style={styles.txtContenedor2}>plantillas</Text>
+        </Text>
+      </Pressable>
 
-export default function App() {
-  return (
-    <AuthenticatedUserProvider>
-      <AppNavigator/>
-    </AuthenticatedUserProvider>
+      <Modal
+      animationType='slide'
+      visible={modal1}>
+        <CrearFormulario
+        setModal1={setModal1}
+        setPlantillas={setPlantillas}
+        plantillas={plantillas}
+        plantilla={plantilla}
+        setPlantilla={setPlantilla}
+        />
+      </Modal>
+
+      <Modal
+      animation="slide"
+      visible={modal2}>
+        <MisPlantillas
+        plantillas={plantillas}
+        setModal2={setModal2}
+        setModal1={setModal1}
+        PlantillaEditar={PlantillaEditar}
+        EliminarPlantilla={EliminarPlantilla}
+        />
+      </Modal>
+    </SafeAreaView>
   )
 }
 
+const styles = StyleSheet.create({
+  contenedorTodo:{
+    backgroundColor:"#cae9ff",
+    flex:1,
+    alignItems:"center",
+    padding:20
+  },
+  btnPlantilla:{
+    backgroundColor:"#4361EE",
+    paddingHorizontal:30,
+    paddingVertical:20,
+    borderRadius:10
+  },
+  btnPlantilla2:{
+    marginTop:10,
+    backgroundColor:"#4361EE",
+    paddingHorizontal:45,
+    paddingVertical:20,
+    borderRadius:10
+  },
+  txtContenedor:{
+    fontSize:20,
+    fontWeight:"300",
+    color:"#FFF"
+  },
+  txtContenedor2:{
+    fontSize: 20,
+    fontWeight:"600"
+  },
+  linearGradient:{
+    marginTop:20,
+    paddingHorizontal:7,
+    borderRadius: 5,
+    paddingVertical:10
+  },
+  buttonText: {
+    fontSize: 22,
+    fontFamily: 'Gill Sans',
+    textAlign: 'center',
+    fontWeight:"700",
+    margin: 10,
+    color: '#FFF',
+    backgroundColor: 'transparent',
+  },
+  sss:{
+    backgroundColor:"red"
+  }
+})
+
+
+
+export default App;
