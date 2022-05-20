@@ -9,28 +9,49 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
 
+
+    //FUNCION QUE CHECKEA LOS INSISOS Y SI ESTOS ESTAN VACIOS PARA POSTETIOR AGREGADO
+    // function funcionInsisos(obj,index) {        
+    //     if ((Object.keys(obj).length === 0) === false) {
+
+    //         return( //Objeto con elementos
+    //             console.log(preguntas)
+    //         )
+
+    //     }else{
+
+
+    //         return(//Objeto sin elementos
+
+    //             <Pressable
+    //             onPress={() => agregarOpcion(obj,index)}>
+    //                 <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
+    //             </Pressable>
+    //         )
+    //     }
+
+    // }
+
+
+
     //VARIABLE PRINCIPAL DE PREGUNTAS
 
-    const [preguntas, setPreguntas] = useState([
-        {
+    const [preguntas, setPreguntas] = useState(
+        [{
             tituloPregunta: '',
-            tiempo: '',
-            incisos: {
-                inciso1:''
-            },
-            respuestaInciso: {}
-        },
-    ])
+            tiempo: '5',
+            opcion: ['RESPUESTA1'],
+            respuestaInciso: null
+        }])
 
 
-    const agregarPregunta = () => {
-        setPreguntas([...preguntas, {
+    const agregarPregunta = () => {setPreguntas
+        
+        ([...preguntas, {
             tituloPregunta: '',
-            tiempo: '',
-            incisos: {
-                a:'Valor 1'
-            },
-            respuestaInciso: {}
+            tiempo: '5',
+            opcion: ['RESPUESTA1'],
+            respuestaInciso: null
         }])
     }
 
@@ -41,15 +62,18 @@ const CrearPlantilla = () => {
     }
 
 
+
+
+
     //Variables del picker modal
     let indx = 0;
     const data = [
         { key: indx++, section: true, label: 'Segundos' },
-        { key: indx++, label: '5 Segundos' },
-        { key: indx++, label: '10 Segundos' },
-        { key: indx++, label: '20 Segundos' },
-        { key: indx++, label: '30 Segundos' },
-        { key: indx++, label: '1 Minuto' },
+        { key: indx++, label: '5 ' },
+        { key: indx++, label: '10 ' },
+        { key: indx++, label: '20 ' },
+        { key: indx++, label: '30' },
+        { key: indx++, label: '60' },
     ];
 
     //INICIA AREA FECHA --------------------------------------------------------------
@@ -113,41 +137,61 @@ const CrearPlantilla = () => {
                 >
                     {/************* AREA DE PREGUNTAS ********************/}
                     {preguntas.map((pregunta, index) => (
+
                         <View key={index} style={styles.containerPregunta}>
+
                             <View style={styles.containerPreguntaA}>
                                 <TextInput
                                     style={styles.textInputPregunta}
                                     placeholder="Ingresa la pregunta"
                                     placeholderTextColor="#a0a0a0"
-                                    onChangeText={(txt) => pregunta.tituloPregunta(txt)}
+                                    onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
                                     multiline={true}
                                 >
                                 </TextInput>
 
-                                <View style={styles.containerPreguntaSegundos}>
-                                    <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
-                                    <ModalSelector
-                                        style={styles.modalselector}
-                                        initValue="5 segundos"
-                                        cancelButtonAccessibilityLabel={'Cancelar'}
-                                        data={data}
-                                        touchableActiveOpacity={0}
-                                        // onChange={(option) => { alert(`${option.label} (${option.key}) nom nom nom`) }}
-                                        selectStyle={{ borderWidth: 0 }}
-                                        selectTextStyle={{ color: '#0083B0' }} />
+                                <View style={styles.containerBotones}>
+                                    <View style={styles.containerPreguntaSegundos}>
+                                        <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
+                                        <ModalSelector
+                                            style={styles.modalselector}
+                                            initValue={pregunta.tiempo}
+                                            cancelButtonAccessibilityLabel={'Cancelar'}
+                                            data={data}
+                                            touchableActiveOpacity={0}
+                                            onChange={(option) => { pregunta.tiempo = option.label }}
+                                            value={pregunta.tiempo}
+                                            selectStyle={{ borderWidth: 0}}
+                                            selectTextStyle = {{color: '#0F74F2'}}
+                                            initValueTextStyle={{color: '#0F74F2'}}>
+                                        </ModalSelector>
+                                    </View>
+
+                                    <View style={styles.containerPreguntaB}>
+                                        <Pressable
+                                            onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "" }}>
+                                            <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
+                                        </Pressable>
+                                    </View>
+
                                 </View>
 
+                                
 
-                                <View style={styles.containerPreguntaBorrar}>
-                                    <Pressable
-                                    onPress={() => eliminarPregunta(index)}>
-                                        <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
-                                    </Pressable>
-                                    
-                                </View>
                             </View>
 
-                            
+                            {pregunta.opcion.map((option, ind) => (
+
+                                <View key={ind} style={styles.containerPreguntaC}>
+                                   
+                                    
+                                    <Pressable
+                                        onPress={() => { pregunta.opcion = Object.assign({}, { ["op"]: index }), console.log(pregunta) }}>
+                                        <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
+                                    </Pressable>
+                                </View>
+                            ))} 
+
 
 
                         </View>
@@ -203,20 +247,35 @@ const styles = StyleSheet.create({
     },
     containerPreguntaA: {
         flexDirection: 'row',
-        marginBottom:5,
+        marginBottom: 5,
+        justifyContent:'space-between',
+        alignItems: 'center',
+    },
+
+    containerPreguntaB: {
+        flexDirection: 'row',
+        marginBottom: 5,
+        marginTop: 10,
+    
+    },
+    containerPreguntaC: {
+        flexDirection: 'row',
+        marginBottom: 5,
+        marginTop: 10,
         
     },
     containerPreguntaSegundos: {
         borderColor: '#D9D9D9',
         borderWidth: 1,
         borderRadius: 10,
-        padding: 3,
+        padding: 4,
         flexDirection: 'row',
         alignContent: 'center',
         alignItems: 'center',
         marginRight: 10,
-        width: 130,
-        maxHeight: 40
+        color:'black',
+        maxHeight: 40,
+        alignItems: 'center',
 
     },
     containerPreguntaBorrar: {
@@ -228,12 +287,19 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        maxHeight: 40
+        maxHeight: 40,
+
+    },
+
+    containerBotones:{
+        flexDirection: 'row',
+        alignItems:'center'
     },
     modalselector: {
         borderWidth: 0,
         marginLeft: 5,
-        fontSize: 1
+        fontSize: 1,
+        color: '#0F74F2'
     },
 
     containerOps: {
@@ -254,7 +320,11 @@ const styles = StyleSheet.create({
     },
     btnMas: {
         marginTop: 30,
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: 100
+    },
+    txtbtnAgregarInciso: {
+        color: '#0F74F2'
     }
 
 })
