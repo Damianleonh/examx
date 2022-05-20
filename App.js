@@ -19,6 +19,8 @@ import CrearPlantilla from "./src/views/CrearPlantilla";
 import VerPlantillas from "./src/views/VerPlantillas";
 import Alumnos from "./src/views/Alumnos";
 import AplicarExamen from "./src/views/AplicarExamen";
+import HistorialExamen from "./src/views/HistorialExamen";
+import IngresarCodigo from "./src/views/IngresarCodigo";
 
 //Navigator
 const Stack = createNativeStackNavigator()
@@ -52,10 +54,8 @@ const AlumnoStack = () => {
   return (
     <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeAlumno} />
-      <Stack.Screen name="CrearPlantilla" component={CrearPlantilla} />
-      <Stack.Screen name="VerPlantillas" component={VerPlantillas} />
-      <Stack.Screen name="Alumnos" component={Alumnos} />
-      <Stack.Screen name="AplicarExamen" component={AplicarExamen} />
+      <Stack.Screen name="HistorialExamen" component={HistorialExamen} />
+      <Stack.Screen name="IngresarCodigo" component={IngresarCodigo} />
     </Stack.Navigator>
   )
 }

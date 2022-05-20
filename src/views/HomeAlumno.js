@@ -1,7 +1,5 @@
 import React from 'react'
 import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert} from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import { FontAwesome } from '@expo/vector-icons'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
@@ -37,15 +35,15 @@ const onSignOut = () => {
 
 }
 
-const Home = ( {navigation} ) => {
+const HomeAlumno = ( {navigation} ) => {
   return (
     <SafeAreaView style={styles.container} >
 
         {/* Titulo */}
         <Text style={styles.titulo}>
-            Inicio alumno
+            Inicio
         </Text>
-
+        
         {/* Boton cerrar sesión */}
         <SafeAreaView style={styles.logouticon}>
           <FontAwesome 
@@ -59,12 +57,54 @@ const Home = ( {navigation} ) => {
 
         {/* Barra de opciones */}
         <View style={styles.optionsMenu}>
-          <Text>ola</Text>
+
+          <Pressable
+            onPress={ () => {
+              navigation.navigate("IngresarCodigo")
+            }}
+          >
+            <View 
+              style={styles.optMenuCard}
+            >
+              <FontAwesome 
+                style={styles.iconfaws}
+                color={"#808080"}
+                borderRadius="100" 
+                size={20} 
+                name="qrcode" 
+                onPress={onSignOut}
+              />
+              <Text style={styles.optMenuCardTxt}>
+                Ingresa a examen con codigo
+              </Text>
+            </View>
+          </Pressable>
+
+          <Pressable
+            onPress={ () => {
+              navigation.navigate("HistorialExamen")
+            }}            
+          >            
+            <View style={styles.optMenuCard}>
+              <FontAwesome 
+                style={styles.iconfaws}
+                color={"#808080"}
+                borderRadius="100" 
+                size={20} 
+                name="clock-o" 
+                onPress={onSignOut}
+              />
+              <Text style={styles.optMenuCardTxt}>
+                Historial de examenes
+              </Text>
+            </View>
+          </Pressable>
+
         </View>
 
         {/* Subtitulo examenes en curso */}
         <Text style={styles.titulo2}>
-            Examenes en curso
+            Mis exámenes
         </Text>
 
         {/* Lista de examenes en curso */}
@@ -84,7 +124,7 @@ const Home = ( {navigation} ) => {
             {/* Nombre de examen y porcentaje */}
             <View>
               <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
+              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
             </View>
           </View>
 
@@ -100,7 +140,7 @@ const Home = ( {navigation} ) => {
             {/* Nombre de examen y porcentaje */}
             <View>
               <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
+              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
             </View>
           </View>
 
@@ -116,7 +156,7 @@ const Home = ( {navigation} ) => {
             {/* Nombre de examen y porcentaje */}
             <View>
               <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
+              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
             </View>
           </View>
 
@@ -137,33 +177,33 @@ const styles = StyleSheet.create({
   
   optionsMenu:{
     marginTop: 20,
-    flexDirection: 'row'
+    flexDirection: 'column'
   },
 
-  cardOpcion:{
-    marginRight: 10,
+  optMenuCard:{
+    borderColor: '#D9D9D9',
+    borderWidth: 1,
     borderRadius: 10,
-    flex: 1,
-    height: 85,
-  },
-
-  cardTxt:{
-    textAlign: 'center',
-    color: '#fff',
-    marginHorizontal: 4
-  },
-  
-  degradado:{
-    alignContent: 'center',
-    justifyContent: 'center',
+    height: 50,
+    paddingHorizontal: 10,
     alignItems: 'center',
-    borderRadius: 10,
-    width: '100%',
-    height: '100%'
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+
+  iconfaws:{
+    marginLeft: 5
+
+  },
+
+  optMenuCardTxt:{
+    marginLeft: 5,
+    color: '#808080',
+    fontWeight: '500'
   },
 
   titulo2:{
-    marginTop: 30,
+    marginTop: 10,
     marginBottom: 10,
     fontSize: 30,
     color: "#a0a0a0"
@@ -216,4 +256,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Home
+export default HomeAlumno
