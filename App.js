@@ -3,7 +3,6 @@ import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { getAuth } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 
 //Firebase
 import { onAuthStateChanged } from "firebase/auth";
@@ -20,8 +19,6 @@ import CrearPlantilla from "./src/views/CrearPlantilla";
 import VerPlantillas from "./src/views/VerPlantillas";
 import Alumnos from "./src/views/Alumnos";
 import AplicarExamen from "./src/views/AplicarExamen";
-import HomeAlumno from "./src/views/HomeAlumno";
-
 
 //Navigator
 const Stack = createNativeStackNavigator()
@@ -35,7 +32,7 @@ const AuthenticatedUserProvider = ({ children }) => { //Funcion para guardar al 
   const [user, setUser] = useState(null);
   return (
     <AuthenticatedUserContext.Provider value={{ user, setUser }}>
-      {children}
+      {children} 
     </AuthenticatedUserContext.Provider>
   );
 };
@@ -71,14 +68,6 @@ const AppStack = () => {
       <Stack.Screen name="VerPlantillas" component={VerPlantillas} />
       <Stack.Screen name="Alumnos" component={Alumnos} />
       <Stack.Screen name="AplicarExamen" component={AplicarExamen} />
-    </Stack.Navigator>
-  )
-}
-
-const AlumnoStack = () => {
-  return (
-    <Stack.Navigator initialRouteName="HomeAlumno" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeAlumno" component={ HomeAlumno }/>
     </Stack.Navigator>
   )
 }
