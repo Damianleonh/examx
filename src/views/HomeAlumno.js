@@ -72,7 +72,6 @@ const HomeAlumno = ( {navigation} ) => {
                 borderRadius="100" 
                 size={20} 
                 name="qrcode" 
-                onPress={onSignOut}
               />
               <Text style={styles.optMenuCardTxt}>
                 Ingresa a examen con codigo
@@ -92,7 +91,6 @@ const HomeAlumno = ( {navigation} ) => {
                 borderRadius="100" 
                 size={20} 
                 name="clock-o" 
-                onPress={onSignOut}
               />
               <Text style={styles.optMenuCardTxt}>
                 Historial de examenes
