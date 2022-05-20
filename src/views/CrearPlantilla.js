@@ -196,7 +196,7 @@ const CrearPlantilla = () => {
 
                                 <View style={styles.containerPreguntaC}>
                                     <Pressable
-                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(pregunta.opcion), renderizarOpciones() }}>
+                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(preguntas), renderizarOpciones() }}>
                                         <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
                                     </Pressable>
 
