@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput, KeyboardAvoidingView } from "react-native";
 import { auth } from '../../database/firebase'
 import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
@@ -40,25 +40,31 @@ const CrearPlantilla = () => {
         [{
             tituloPregunta: '',
             tiempo: '5',
-            opcion: ['RESPUESTA1'],
+            opcion: ['Opcion'],
             respuestaInciso: null
         }])
 
+    const [inputOpcion, setInputOpcion] = useState("")
 
-    const agregarPregunta = () => {setPreguntas
-        
-        ([...preguntas, {
-            tituloPregunta: '',
-            tiempo: '5',
-            opcion: ['RESPUESTA1'],
-            respuestaInciso: null
-        }])
+
+    const agregarPregunta = () => {
+        setPreguntas
+            ([...preguntas, {
+                tituloPregunta: '',
+                tiempo: '5',
+                opcion: ['Opcion'],
+                respuestaInciso: null
+            }])
     }
 
     const eliminarPregunta = (index) => {
         const cambio = [...preguntas]
         cambio.splice(index, 1)
         setPreguntas(cambio)
+    }
+
+    const renderizarOpciones = () => {
+        setPreguntas([...preguntas])
     }
 
 
@@ -132,83 +138,119 @@ const CrearPlantilla = () => {
 
                 <Text style={styles.txtFecha}>Fecha de creación: {date.dateDay} {date.dateHour}</Text>
 
-                <ScrollView
-                    alwaysBounceVertical={false}
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    animated={true}
+
                 >
-                    {/************* AREA DE PREGUNTAS ********************/}
-                    {preguntas.map((pregunta, index) => (
 
-                        <View key={index} style={styles.containerPregunta}>
+                    <ScrollView
+                        alwaysBounceVertical={false}
+                        showsVerticalScrollIndicator={false}
 
-                            <View style={styles.containerPreguntaA}>
-                                <TextInput
-                                    style={styles.textInputPregunta}
-                                    placeholder="Ingresa la pregunta"
-                                    placeholderTextColor="#a0a0a0"
-                                    onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
-                                    multiline={true}
-                                >
-                                </TextInput>
+                    >
+                        {/************* AREA DE PREGUNTAS ********************/}
+                        {preguntas.map((pregunta, index) => (
 
-                                <View style={styles.containerBotones}>
-                                    <View style={styles.containerPreguntaSegundos}>
-                                        <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
-                                        <ModalSelector
-                                            style={styles.modalselector}
-                                            initValue={pregunta.tiempo}
-                                            cancelButtonAccessibilityLabel={'Cancelar'}
-                                            data={data}
-                                            touchableActiveOpacity={0}
-                                            onChange={(option) => { pregunta.tiempo = option.label }}
-                                            value={pregunta.tiempo}
-                                            selectStyle={{ borderWidth: 0}}
-                                            selectTextStyle = {{color: '#0F74F2'}}
-                                            initValueTextStyle={{color: '#0F74F2'}}>
-                                        </ModalSelector>
+                            <View key={index} style={styles.containerPregunta}>
+
+                                <View style={styles.containerPreguntaA}>
+                                    <TextInput
+                                        style={styles.textInputPregunta}
+                                        placeholder="Ingresa la pregunta"
+                                        placeholderTextColor="#a0a0a0"
+                                        onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
+                                        multiline={true}
+                                    >
+                                    </TextInput>
+
+                                    <View style={styles.containerBotones}>
+                                        <View style={styles.containerPreguntaSegundos}>
+                                            <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
+                                            <ModalSelector
+                                                style={styles.modalselector}
+                                                initValue={pregunta.tiempo}
+                                                cancelButtonAccessibilityLabel={'Cancelar'}
+                                                data={data}
+                                                touchableActiveOpacity={0}
+                                                onChange={(option) => { pregunta.tiempo = option.label }}
+                                                value={pregunta.tiempo}
+                                                selectStyle={{ borderWidth: 0 }}
+                                                selectTextStyle={{ color: '#0F74F2' }}
+                                                initValueTextStyle={{ color: '#0F74F2' }}>
+                                            </ModalSelector>
+                                        </View>
+
+                                        <View style={styles.containerBotones}>
+                                            <Pressable
+                                                onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "" }}>
+                                                <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
+                                            </Pressable>
+                                        </View>
+
                                     </View>
 
-                                    <View style={styles.containerPreguntaB}>
-                                        <Pressable
-                                            onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "" }}>
-                                            <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
-                                        </Pressable>
-                                    </View>
+
 
                                 </View>
 
-                                
-
-                            </View>
-
-                            {pregunta.opcion.map((option, ind) => (
-
-                                <View key={ind} style={styles.containerPreguntaC}>
-                                   
-                                    
+                                <View style={styles.containerPreguntaC}>
                                     <Pressable
-                                        onPress={() => { pregunta.opcion = Object.assign({}, { ["op"]: index }), console.log(pregunta) }}>
+                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(pregunta.opcion), renderizarOpciones() }}>
                                         <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
                                     </Pressable>
+
+
                                 </View>
-                            ))} 
+
+                                {pregunta.opcion.map((option, ind) => (
+                                    <View key={ind} style={styles.containerPreguntaC}>
+
+                                        <Text style={{ color: "#a0a0a0" }}> •   </Text>
+
+                                        <TextInput
+                                            style={styles.textInputOpcion}
+                                            placeholder='Ingresa una respuesta'
+                                            placeholderTextColor="#a0a0a0"
+                                            onChangeText={(text) => { pregunta.opcion[ind] = text }}
+                                        >
+                                        </TextInput>
+
+
+                                        <View
+                                            style={styles.containerOpcionesBtns}>
+                                            <Pressable
+                                                onPress={() => { pregunta.opcion.splice(ind, 1), renderizarOpciones() }}
+
+                                            >
+                                                <Text style={styles.txtbtnAgregarInciso}>Eliminar</Text>
+                                            </Pressable>
+
+
+                                        </View>
+                                    </View>
+                                ))}
 
 
 
-                        </View>
-                    ))}
+                            </View>
+                        ))}
 
-                    {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
-
-
+                        {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
 
 
 
-                    <Pressable style={styles.btnMas}
-                        onPress={() => agregarPregunta()}>
-                        <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
-                    </Pressable>
 
-                </ScrollView>
+
+                        <Pressable style={styles.btnMas}
+                            onPress={() => agregarPregunta()}>
+                            <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
+                        </Pressable>
+
+                    </ScrollView>
+
+                </KeyboardAvoidingView>
+
 
             </View>
         </SafeAreaView>
@@ -245,37 +287,45 @@ const styles = StyleSheet.create({
         width: 130,
         marginRight: '12%'
     },
+
+    textInputOpcion: {
+
+    },
     containerPreguntaA: {
         flexDirection: 'row',
         marginBottom: 5,
-        justifyContent:'space-between',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        alignContent: 'center',
     },
 
     containerPreguntaB: {
         flexDirection: 'row',
         marginBottom: 5,
         marginTop: 10,
-    
+
     },
     containerPreguntaC: {
         flexDirection: 'row',
         marginBottom: 5,
         marginTop: 10,
-        
+        display: 'flex',
+
     },
+
     containerPreguntaSegundos: {
         borderColor: '#D9D9D9',
         borderWidth: 1,
         borderRadius: 10,
-        padding: 4,
+        paddingHorizontal: 2,
         flexDirection: 'row',
         alignContent: 'center',
         alignItems: 'center',
         marginRight: 10,
-        color:'black',
+        color: 'black',
         maxHeight: 40,
         alignItems: 'center',
+        justifyContent: 'center',
 
     },
     containerPreguntaBorrar: {
@@ -288,12 +338,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         maxHeight: 40,
-
     },
 
-    containerBotones:{
+    containerBotones: {
         flexDirection: 'row',
-        alignItems:'center'
+        alignItems: 'center'
     },
     modalselector: {
         borderWidth: 0,
@@ -321,11 +370,16 @@ const styles = StyleSheet.create({
     btnMas: {
         marginTop: 30,
         alignItems: "center",
-        marginBottom: 100
+        marginBottom: 200
     },
     txtbtnAgregarInciso: {
         color: '#0F74F2'
-    }
+    },
+
+    containerOpcionesBtns: {
+        flex:1,
+        flexDirection:"row-reverse",    
+    },
 
 })
 
