@@ -5,7 +5,6 @@ import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
 
