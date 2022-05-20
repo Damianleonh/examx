@@ -16,7 +16,7 @@ const Registro = ({ modalRegistro, setModalRegistro }) => {
   const [repassword, setResPassword] = useState("")
   const [nombre, setNombre] = useState("")
   const [apellido, setApellido] = useState("")
-  const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState();
+  const [seleccionTipoUsuario, setSeleccionTipoUsuario] = useState("");
 
   function crearUsuario() {
 

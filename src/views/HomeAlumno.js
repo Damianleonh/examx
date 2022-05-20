@@ -59,58 +59,7 @@ const Home = ( {navigation} ) => {
 
         {/* Barra de opciones */}
         <View style={styles.optionsMenu}>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('CrearPlantilla')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Crear plantilla</Text>
-            </LinearGradient>
-          </Pressable>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('VerPlantillas')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Ver plantillas</Text>
-            </LinearGradient>
-          </Pressable>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('Alumnos')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Alumnos</Text>
-            </LinearGradient>
-          </Pressable>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('AplicarExamen')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Aplicar examen</Text>
-            </LinearGradient>
-          </Pressable>
+          <Text>ola</Text>
         </View>
 
         {/* Subtitulo examenes en curso */}
