@@ -1,36 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput, KeyboardAvoidingView } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput, KeyboardAvoidingView, Vibration } from "react-native";
 import { auth } from '../../database/firebase'
 import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
-
-
-    //FUNCION QUE CHECKEA LOS INSISOS Y SI ESTOS ESTAN VACIOS PARA POSTETIOR AGREGADO
-    // function funcionInsisos(obj,index) {        
-    //     if ((Object.keys(obj).length === 0) === false) {
-
-    //         return( //Objeto con elementos
-    //             console.log(preguntas)
-    //         )
-
-    //     }else{
-
-
-    //         return(//Objeto sin elementos
-
-    //             <Pressable
-    //             onPress={() => agregarOpcion(obj,index)}>
-    //                 <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
-    //             </Pressable>
-    //         )
-    //     }
-
-    // }
-
 
 
     //VARIABLE PRINCIPAL DE PREGUNTAS
@@ -40,7 +19,7 @@ const CrearPlantilla = () => {
             tituloPregunta: '',
             tiempo: '5',
             opcion: ['Opcion'],
-            respuestaInciso: null
+            respuestaCorrecta: null
         }])
 
     const [inputOpcion, setInputOpcion] = useState("")
@@ -52,7 +31,7 @@ const CrearPlantilla = () => {
                 tituloPregunta: '',
                 tiempo: '5',
                 opcion: ['Opcion'],
-                respuestaInciso: null
+                respuestaCorrecta: null
             }])
     }
 
@@ -67,7 +46,24 @@ const CrearPlantilla = () => {
     }
 
 
+    const elegirOpcion = (obj, i) => {
+        if (obj.respuestaCorrecta === i) {
+            return (
+                <Pressable onPress={() => { return (obj.respuestaCorrecta = null), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                    <FontAwesome name="star" size={20} color="#0F74F2" style={{ marginRight: 10 }} />
+                </Pressable>
+            )
 
+        } else {
+            return (
+                <Pressable onPress={() => { return (obj.respuestaCorrecta = i), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                    <Feather name="star" size={20} color="#0F74F2" style={{ marginRight: 10 }} />
+                </Pressable>
+            )
+
+        }
+
+    }
 
 
     //Variables del picker modal
@@ -108,20 +104,11 @@ const CrearPlantilla = () => {
             dateHour: hours + ':' + min
         }
         );
+
     }, []);
 
     //TERMINA AREA FECHA --------------------------------------------------------------
-
-    //Todos los datos del formulario
-    const [titulo, setTitulo] = useState("")
-    const [autor, setAutor] = useState("")
-    const [fechaCreacion, setFechaCreacion] = useState("")
-    const [fechaAct, setFechaAct] = useState("")
-
-
-
     const [date, setDate] = useState("")
-
 
     return (
         <SafeAreaView style={styles.container}>
@@ -174,6 +161,7 @@ const CrearPlantilla = () => {
                                                 touchableActiveOpacity={0}
                                                 onChange={(option) => { pregunta.tiempo = option.label }}
                                                 value={pregunta.tiempo}
+                                                onModalOpen={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)}
                                                 selectStyle={{ borderWidth: 0 }}
                                                 selectTextStyle={{ color: '#0F74F2' }}
                                                 initValueTextStyle={{ color: '#0F74F2' }}>
@@ -182,7 +170,11 @@ const CrearPlantilla = () => {
 
                                         <View style={styles.containerBotones}>
                                             <Pressable
-                                                onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "" }}>
+                                                style={({ pressed }) => [
+                                                    { borderRadius: 10 },
+                                                    pressed ? { opacity: 0.2 } : {},
+                                                ]}
+                                                onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "", Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) }}>
                                                 <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
                                             </Pressable>
                                         </View>
@@ -195,17 +187,24 @@ const CrearPlantilla = () => {
 
                                 <View style={styles.containerPreguntaC}>
                                     <Pressable
-                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(preguntas), renderizarOpciones() }}>
+                                        style={({ pressed }) => [
+                                            { borderRadius: 10 },
+                                            pressed ? { opacity: 0.2 } : {},
+                                        ]}
+                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(preguntas), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
                                         <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
                                     </Pressable>
 
 
                                 </View>
 
-                                {pregunta.opcion.map((option, ind) => (
+
+
+                                {pregunta.opcion.map((opc, ind) => (
                                     <View key={ind} style={styles.containerPreguntaC}>
 
-                                        <Text style={{ color: "#a0a0a0" }}> •   </Text>
+
+                                        {elegirOpcion(pregunta, ind)}
 
                                         <TextInput
                                             style={styles.textInputOpcion}
@@ -219,17 +218,18 @@ const CrearPlantilla = () => {
                                         <View
                                             style={styles.containerOpcionesBtns}>
                                             <Pressable
-                                                onPress={() => { pregunta.opcion.splice(ind, 1), renderizarOpciones() }}
-
+                                                style={({ pressed }) => [
+                                                    { borderRadius: 10 },
+                                                    pressed ? { opacity: 0.2 } : {},
+                                                ]}
+                                                onPress={() => { pregunta.opcion.splice(ind, 1), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error) }}
                                             >
                                                 <Text style={styles.txtbtnAgregarInciso}>Eliminar</Text>
                                             </Pressable>
 
-
                                         </View>
                                     </View>
                                 ))}
-
 
 
                             </View>
@@ -241,8 +241,17 @@ const CrearPlantilla = () => {
 
 
 
-                        <Pressable style={styles.btnMas}
-                            onPress={() => agregarPregunta()}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    borderRadius: 10,
+                                    marginTop: 30,
+                                    alignItems: "center",
+                                    marginBottom: 200
+                                },
+                                pressed ? { opacity: 0.2 } : {},
+                            ]}
+                            onPress={() => { console.log(preguntas), agregarPregunta(), Haptics.selectionAsync() }}>
                             <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
                         </Pressable>
 
@@ -309,6 +318,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginTop: 10,
         display: 'flex',
+        alignItems: 'center',
 
     },
 
@@ -367,17 +377,15 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     btnMas: {
-        marginTop: 30,
-        alignItems: "center",
-        marginBottom: 200
+
     },
     txtbtnAgregarInciso: {
         color: '#0F74F2'
     },
 
     containerOpcionesBtns: {
-        flex:1,
-        flexDirection:"row-reverse",    
+        flex: 1,
+        flexDirection: "row-reverse",
     },
 
 })
