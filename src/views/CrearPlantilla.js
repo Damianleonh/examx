@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Image, Pressable, TextInput, KeyboardAvoidingView, Vibration } from "react-native";
-import { auth } from '../../database/firebase'
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView} from "react-native";
 import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { db } from '../../firebase-config';
+
+
 
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
@@ -21,8 +26,6 @@ const CrearPlantilla = () => {
             opcion: ['Opcion'],
             respuestaCorrecta: null
         }])
-
-    const [inputOpcion, setInputOpcion] = useState("")
 
 
     const agregarPregunta = () => {
@@ -66,6 +69,23 @@ const CrearPlantilla = () => {
     }
 
 
+
+
+    const subirPlantilla = () => {
+        const numRandom = Math.floor( Math.random() * (999999 - 100000)) + 100000
+        const auth = getAuth();
+        const user = auth.currentUser.email;
+
+        addDoc(collection(db, "plantillas"), {
+            autor: user,
+            titulo: tituloPlantilla,
+            fechaCreacion: {date, hora} ,
+            fechaActualizacion: null,
+            preguntas: preguntas,
+        });
+    }
+
+
     //Variables del picker modal
     let indx = 0;
     const data = [
@@ -99,18 +119,23 @@ const CrearPlantilla = () => {
             min = "0" + min
         }
 
-        setDate({
-            dateDay: date + '/' + month + '/' + year,
-            dateHour: hours + ':' + min
-        }
+        setDate(
+             date + '/' + month + '/' + year 
         );
 
-    }, []);
+        setHora(
+            hours + ':' + min
+        )
 
+    }, []);
     //TERMINA AREA FECHA --------------------------------------------------------------
     const [date, setDate] = useState("")
+    const [hora,setHora] = useState("")
+    const [tituloPlantilla, setTituloPlantilla] = useState("")
+
 
     return (
+
         <SafeAreaView style={styles.container}>
             {/* container principal */}
             <View style={styles.containerF}>
@@ -118,11 +143,11 @@ const CrearPlantilla = () => {
                 {/* Titulos */}
                 <TextInput style={styles.txtForm}
                     placeholder="Titulo de la plantilla"
-                    onChangeText={(txt) => setTitulo(txt)}
+                    onChangeText={(txt) => {setTituloPlantilla(txt)}}
                     placeholderTextColor="#a0a0a0"
                 />
 
-                <Text style={styles.txtFecha}>Fecha de creación: {date.dateDay} {date.dateHour}</Text>
+                <Text style={styles.txtFecha}>Fecha de creación: {date} {hora}</Text>
 
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -247,12 +272,44 @@ const CrearPlantilla = () => {
                                     borderRadius: 10,
                                     marginTop: 30,
                                     alignItems: "center",
-                                    marginBottom: 200
+                                    marginBottom: 20
                                 },
                                 pressed ? { opacity: 0.2 } : {},
                             ]}
                             onPress={() => { console.log(preguntas), agregarPregunta(), Haptics.selectionAsync() }}>
                             <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
+                        </Pressable>
+
+
+                        <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    borderRadius: 10,
+                                    marginTop: 30,
+                                    alignItems: "center",
+                                    marginBottom: 200,
+                                    backgroundColor: '#0F74F2',
+                                    height:50,
+                                    width:200,
+                                    alignSelf: "center",
+                                    
+                                },
+                                pressed ? { opacity: 0.2 } : {},
+                            ]}
+
+                            onPress={() => { subirPlantilla() }}
+                            
+                        >
+                            <LinearGradient
+                                colors={["#8C4DE9", "#0083B0"]}
+                                start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
+                                style={styles.degradado}
+                            >
+                            
+                                <Text style={styles.textBtnSubir}>Subir plantilla</Text>
+                            
+                            </LinearGradient>
+
                         </Pressable>
 
                     </ScrollView>
@@ -297,6 +354,7 @@ const styles = StyleSheet.create({
     },
 
     textInputOpcion: {
+        maxWidth: 230
 
     },
     containerPreguntaA: {
@@ -386,6 +444,20 @@ const styles = StyleSheet.create({
     containerOpcionesBtns: {
         flex: 1,
         flexDirection: "row-reverse",
+    },
+    textBtnSubir:{
+        color:'white',
+        fontSize:16,
+        fontWeight: 'bold',
+    },
+
+    degradado: {
+        alignContent: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        width: '100%',
+        height: '100%'
     },
 
 })
