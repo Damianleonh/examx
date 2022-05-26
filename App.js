@@ -2,13 +2,12 @@ import React, { useState, createContext, useContext, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { getAuth } from "firebase/auth";
 
 //Firebase
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./database/firebase";
 
-import { addDoc, collection, doc, setDoc, getDoc } from "firebase/firestore"
+import { doc, getDoc } from "firebase/firestore"
 import { db } from './firebase-config';
 
 //views
@@ -29,8 +28,8 @@ const Stack = createNativeStackNavigator()
 
 //----------------->Auth 
 const AuthenticatedUserContext = createContext({}); //Contexto usuario autenticado
-
-const AuthenticatedUserProvider = ({ children }) => { //Funcion para guardar al usuario en el contexto
+// eslint-disable-next-line react/prop-types
+const AuthenticatedUserProvider = ({ children }) => { //Funcion para guardar al usuario en el contexto 
   const [user, setUser] = useState(null);
   return (
     <AuthenticatedUserContext.Provider value={{ user, setUser }}>

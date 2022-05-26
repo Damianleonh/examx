@@ -1,257 +1,236 @@
-import React from 'react'
-import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert} from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
-import { signOut } from 'firebase/auth'
-import { auth } from '../../database/firebase'
+import React from "react";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { signOut } from "firebase/auth";
+import { auth } from "../../database/firebase";
 
 const onSignOut = () => {
-
-  Alert.alert(
-    "Alerta",
-    "¿Estas seguro de cerrar sesión?",
-    [
-      {
-        text: 'Cancelar',
-        onPress: () => {
-          return
-        }
+  Alert.alert("Alerta", "¿Estas seguro de cerrar sesión?", [
+    {
+      text: "Cancelar",
+      onPress: () => {
+        return;
       },
+    },
 
-      {
-        text: 'Si',
-        onPress: () => {
-          signOut(auth).catch( error => {
-            Alert.alert(
-              "Error",
-              "Error al cerrar sesion"
-            )
-        
-          })
-        }
-      }
+    {
+      text: "Si",
+      onPress: () => {
+        signOut(auth).catch((error) => {
+          Alert.alert("Error", "Error al cerrar sesion");
+          console.log(error);
+        });
+      },
+    },
+  ]);
+};
 
-    ]
-  )
-
-}
-
-const HomeAlumno = ( {navigation} ) => {
+const HomeAlumno = ({ navigation }) => { // eslint-disable-line
   return (
-    <SafeAreaView style={styles.container} >
+    <SafeAreaView style={styles.container}>
+      {/* Titulo */}
+      <Text style={styles.titulo}>Inicio</Text>
 
-        {/* Titulo */}
-        <Text style={styles.titulo}>
-            Inicio
-        </Text>
-        
-        {/* Boton cerrar sesión */}
-        <SafeAreaView style={styles.logouticon}>
-          <FontAwesome 
-            color={"#0F74F2"}
-            borderRadius="100" 
-            size={25} 
-            name="sign-out" 
-            onPress={onSignOut}
-          />
-        </SafeAreaView>
+      {/* Boton cerrar sesión */}
+      <SafeAreaView style={styles.logouticon}>
+        <FontAwesome
+          color={"#0F74F2"}
+          borderRadius="100"
+          size={25}
+          name="sign-out"
+          onPress={onSignOut}
+        />
+      </SafeAreaView>
 
-        {/* Barra de opciones */}
-        <View style={styles.optionsMenu}>
+      {/* Barra de opciones */}
+      <View style={styles.optionsMenu}>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("IngresarCodigo"); // eslint-disable-line
+          }}
+        >
+          <View style={styles.optMenuCard}>
+            <FontAwesome
+              style={styles.iconfaws}
+              color={"#808080"}
+              borderRadius="100"
+              size={20}
+              name="qrcode"
+            />
+            <Text style={styles.optMenuCardTxt}>
+              Ingresa a examen con codigo
+            </Text>
+          </View>
+        </Pressable>
 
-          <Pressable
-            onPress={ () => {
-              navigation.navigate("IngresarCodigo")
-            }}
-          >
-            <View 
-              style={styles.optMenuCard}
-            >
-              <FontAwesome 
-                style={styles.iconfaws}
-                color={"#808080"}
-                borderRadius="100" 
-                size={20} 
-                name="qrcode" 
-              />
-              <Text style={styles.optMenuCardTxt}>
-                Ingresa a examen con codigo
-              </Text>
-            </View>
-          </Pressable>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("HistorialExamen"); // eslint-disable-line
+          }}
+        >
+          <View style={styles.optMenuCard}>
+            <FontAwesome
+              style={styles.iconfaws}
+              color={"#808080"}
+              borderRadius="100"
+              size={20}
+              name="clock-o"
+            />
+            <Text style={styles.optMenuCardTxt}>Historial de examenes</Text>
+          </View>
+        </Pressable>
+      </View>
 
-          <Pressable
-            onPress={ () => {
-              navigation.navigate("HistorialExamen")
-            }}            
-          >            
-            <View style={styles.optMenuCard}>
-              <FontAwesome 
-                style={styles.iconfaws}
-                color={"#808080"}
-                borderRadius="100" 
-                size={20} 
-                name="clock-o" 
-              />
-              <Text style={styles.optMenuCardTxt}>
-                Historial de examenes
-              </Text>
-            </View>
-          </Pressable>
+      {/* Subtitulo examenes en curso */}
+      <Text style={styles.titulo2}>Mis exámenes</Text>
 
+      {/* Lista de examenes en curso */}
+      <ScrollView style={styles.scroll} alwaysBounceVertical={true}>
+        {/* Un solo elemento */}
+        <View style={styles.exmCardContainer}>
+          {/* Grado y grupo */}
+          <Text style={styles.gradoTxt}>6D</Text>
+
+          {/* Linea azul */}
+          <View style={styles.linea}></View>
+
+          {/* Nombre de examen y porcentaje */}
+          <View>
+            <Text style={styles.examenTitle}>Examen 1</Text>
+            <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
+          </View>
         </View>
 
-        {/* Subtitulo examenes en curso */}
-        <Text style={styles.titulo2}>
-            Mis exámenes
-        </Text>
+        {/* Un solo elemento */}
+        <View style={styles.exmCardContainer}>
+          {/* Grado y grupo */}
+          <Text style={styles.gradoTxt}>6D</Text>
 
-        {/* Lista de examenes en curso */}
-        <ScrollView style={styles.scroll}
-          alwaysBounceVertical={true}
-        >
+          {/* Linea azul */}
+          <View style={styles.linea}></View>
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
-
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
+          {/* Nombre de examen y porcentaje */}
+          <View>
+            <Text style={styles.examenTitle}>Examen 1</Text>
+            <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
           </View>
+        </View>
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
+        {/* Un solo elemento */}
+        <View style={styles.exmCardContainer}>
+          {/* Grado y grupo */}
+          <Text style={styles.gradoTxt}>6D</Text>
 
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
+          {/* Linea azul */}
+          <View style={styles.linea}></View>
 
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
+          {/* Nombre de examen y porcentaje */}
+          <View>
+            <Text style={styles.examenTitle}>Examen 1</Text>
+            <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
           </View>
-
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
-
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
-          </View>
-
-        </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     marginHorizontal: 20,
   },
 
-  titulo:{
+  titulo: {
     marginTop: 10,
-    fontSize: 30
-  },
-  
-  optionsMenu:{
-    marginTop: 20,
-    flexDirection: 'column'
+    fontSize: 30,
   },
 
-  optMenuCard:{
-    borderColor: '#D9D9D9',
+  optionsMenu: {
+    marginTop: 20,
+    flexDirection: "column",
+  },
+
+  optMenuCard: {
+    borderColor: "#D9D9D9",
     borderWidth: 1,
     borderRadius: 10,
     height: 50,
     paddingHorizontal: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     marginBottom: 10,
   },
 
-  iconfaws:{
-    marginLeft: 5
-
-  },
-
-  optMenuCardTxt:{
+  iconfaws: {
     marginLeft: 5,
-    color: '#808080',
-    fontWeight: '500'
   },
 
-  titulo2:{
+  optMenuCardTxt: {
+    marginLeft: 5,
+    color: "#808080",
+    fontWeight: "500",
+  },
+
+  titulo2: {
     marginTop: 10,
     marginBottom: 10,
     fontSize: 30,
-    color: "#a0a0a0"
+    color: "#a0a0a0",
   },
 
-  exmCardContainer:{
-    borderColor: '#D9D9D9',
+  exmCardContainer: {
+    borderColor: "#D9D9D9",
     borderWidth: 1,
     borderRadius: 10,
     height: 70,
     paddingHorizontal: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 10
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 10,
   },
 
-  gradoTxt:{
+  gradoTxt: {
     fontSize: 30,
-    fontWeight: '500',
-    color: '#0F74F2'
+    fontWeight: "500",
+    color: "#0F74F2",
   },
 
-  linea:{
+  linea: {
     width: 1,
     backgroundColor: "#0F74F2",
     height: "70%",
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
 
-  examenTitle:{
+  examenTitle: {
     color: "#000",
     // fontSize: 16
   },
 
-  examenPorc:{
+  examenPorc: {
     color: "#0F74F2",
   },
 
-  scroll:{
-    height: '100%'
+  scroll: {
+    height: "100%",
   },
 
-  logouticon:{
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+  logouticon: {
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
     top: 68,
-    right: 0
-  }
-})
+    right: 0,
+  },
+});
 
-export default HomeAlumno
+export default HomeAlumno;
