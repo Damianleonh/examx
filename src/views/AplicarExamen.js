@@ -1,26 +1,36 @@
-import React, { useState, useLayoutEffect, useRef} from 'react'
-import { View, SafeAreaView, Text, StyleSheet, ScrollView, Dimensions, Image, Pressable} from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
-import VerPlantillas from './VerPlantillas'
+import React, { useState, useLayoutEffect, useRef, useEffect} from 'react'
+import { View, SafeAreaView, Text, StyleSheet, ScrollView, Dimensions, Image, Pressable, TextInput} from 'react-native'
 import { auth } from '../../database/firebase'
-import { collection, where, query, onSnapshot } from 'firebase/firestore';
+import { collection, where, query, onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 
 const AplicarExamen = () => {
 
     // ----Zona de hooks---
-    const [ plantillas, setPlantillas ] = useState([])
-    const [ scrollIndex, setScrollIndex] = useState(1)
+    const [ plantillas, setPlantillas ] = useState([]) //Datos de firebase
+    const [ alumnos, setAlumnos ] = useState([])
+
+    const [ codigoExamen, setCodigoExamen] = useState("") //Datos de examen
     const [ plantillaSelected, setPlantillaSelected ] = useState(null)
+    const [ alumnosSelected, setAlumnosSelected ] = useState([])
+
+    const [ scrollIndex, setScrollIndex] = useState(1) //Variables de control
     const [ buttonState, setButtonState ] = useState(true)
+    const [ correosBusqueda, setCorreosBusqueda ] = useState([])
     const scrollRef = useRef()
+
+    useEffect(()=>{
+        if(alumnosSelected.length===0){
+            setButtonState(true)
+        }
+    }, [alumnosSelected])
 
     //---Cargar plantillas disponibles---
     useLayoutEffect( ()=>{
+
+        //Consulta plantillas
         const q = query(collection(db, "plantillas"), where("autor", "==", auth.currentUser.email))
         const unsuscribe = onSnapshot(q,(querySnapshot)=>{
-
             let tempArr = []
             querySnapshot.forEach((doc) => {
                 tempArr.push(doc.data())
@@ -28,6 +38,21 @@ const AplicarExamen = () => {
 
             setPlantillas(tempArr)
         })
+
+        //Consultar alumnos
+        const q2 = query(collection(db, "Usuarios"), where("tipo", "==", "usuarioAlumno"))
+        const unsuscribe2 = onSnapshot(q2, (snap)=>{
+            let tempAlum = []
+            snap.forEach((alumno)=>{
+                tempAlum.push(alumno.data())
+            })
+
+            setAlumnos(tempAlum)
+        })
+
+        //Generar codigo
+        setCodigoExamen(generarCodigo(6))
+
     }, [])
 
     // ------Calcular tiempo de plantillas----
@@ -45,6 +70,41 @@ const AplicarExamen = () => {
         setScrollIndex(scrollIndex+1)
     }
 
+    const generarCodigo = (length) => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * 
+            charactersLength));
+        }
+        return result;
+    }
+
+    //Funcion buscar alumno
+    const buscarAlumno = (txt) =>{
+
+        //Separar correos de objeto alumnos
+        let correos = []
+        alumnos.forEach( e =>{
+            correos.push(e.correo)
+        })
+
+        if(txt){
+            //Filtrar por index
+            const newData = correos.filter(item=>{
+                const itemData = item ? item.toUpperCase()
+                        : ''.toUpperCase()
+                const textData = txt.toUpperCase()
+                return itemData.indexOf(textData) > -1;
+            })
+            setCorreosBusqueda(newData)
+        }else{
+            setCorreosBusqueda([])
+        }
+
+
+    }
     return (
         <SafeAreaView style={styles.safeaview}>
             <View style={styles.container}>
@@ -98,13 +158,113 @@ const AplicarExamen = () => {
 
                 {/*--------Apartado alumnos-----------*/}
                 <View style={styles.apartado}>
-                    <Text>Alumnos</Text>
+
+                    <Text style={styles.indicacion}>Elige a los alumnos participantes {"\n"}o comparte este codigo</Text>
+                    <Text style={styles.indicacioncode} selectable={true}>{codigoExamen} {"\n"}</Text>
+
+                    <TextInput
+                        style={styles.input}
+                        placeholder={"Buscar por correo"}
+                        onChangeText={ (item) =>{
+                            buscarAlumno(item)
+                        }}
+                    />
+
+                    <ScrollView
+                        alwaysBounceVertical={false}
+                    >
+                        {/* -------Mapeo de alumnos----------*/}
+                        { alumnos.map((alumno, index) =>{
+                            if(correosBusqueda.length === 0){
+                                return (
+                                    <Pressable
+                                        onPress={()=>{
+                                            setButtonState(false)
+        
+                                            if(!(alumnosSelected.find(e=> e==alumno.correo))){
+                                                //Agregar alumno
+                                                setAlumnosSelected([...alumnosSelected, alumno.correo])
+                                            }else{
+                                                //Borrar alumno si ya existe
+                                                const remove = alumnosSelected.filter((item)=> item !== alumno.correo )
+                                                setAlumnosSelected(remove)
+                                            }
+                    
+                                        }}
+                                    >
+                                        <View style={ alumnosSelected.find(e=> e==alumno.correo) ? styles.plantCardSelec : styles.plantCard  } >
+        
+                                            <View style={styles.viewTxt}>                            
+                                                <Text style={styles.plantCardTxt}>
+                                                    {alumno.nombreUsuario}
+                                                </Text>
+                                                <Text style={styles.tmpEstTxt}>
+                                                    {alumno.correo}
+                                                </Text>
+                                            </View>
+        
+                                        </View>
+                                    </Pressable>
+                                )
+                            }else{
+                                if(correosBusqueda.find( e => e === alumno.correo)){
+                                    return (
+                                        <Pressable
+                                            onPress={()=>{
+                                                setButtonState(false)
+            
+                                                if(!(alumnosSelected.find(e=> e==alumno.correo))){
+                                                    //Agregar alumno
+                                                    setAlumnosSelected([...alumnosSelected, alumno.correo])
+                                                }else{
+                                                    //Borrar alumno si ya existe
+                                                    const remove = alumnosSelected.filter((item)=> item !== alumno.correo )
+                                                    setAlumnosSelected(remove)
+                                                }
+                        
+                                            }}
+                                        >
+                                            <View style={ alumnosSelected.find(e=> e==alumno.correo) ? styles.plantCardSelec : styles.plantCard  } >
+            
+                                                <View style={styles.viewTxt}>                            
+                                                    <Text style={styles.plantCardTxt}>
+                                                        {alumno.nombreUsuario}
+                                                    </Text>
+                                                    <Text style={styles.tmpEstTxt}>
+                                                        {alumno.correo}
+                                                    </Text>
+                                                </View>
+            
+                                            </View>
+                                        </Pressable>
+                                    )
+                                }
+
+                            }
+                        }) }
+                        {/* ------------------------------------ */}
+                    </ScrollView>
+
                 </View>
 
 
                 {/*--------Apartado grado grupo-------*/}
                 <View style={styles.apartado}>
-                    <Text>Grado y grupo</Text>
+                    <Text style={styles.indicacion}>Ingresa un grado y grupo</Text>
+                    <View style={styles.ggcontianer}>
+                        <TextInput
+                            style={styles.ggelement}
+                            placeholder='6'
+                            keyboardType='number-pad'
+                            maxLength={2}
+                        />
+
+                        <TextInput
+                            style={styles.ggelement}
+                            placeholder='D'
+                            maxLength={2}
+                        />
+                    </View>
                 </View>
 
             </ScrollView>
@@ -119,7 +279,7 @@ const AplicarExamen = () => {
                     disabled={buttonState}
                 >
                     <Text style={styles.buttonText}>
-                        Siguiente
+                        { scrollIndex >=3 ? "Crear" : "Siguiente" }
                     </Text>
                 </Pressable>
             </View>
@@ -157,7 +317,7 @@ const styles = StyleSheet.create({
     apartado:{
         marginTop: 20,
         width: Dimensions.get('window').width,
-        height: 500,
+        height: 550,
         paddingHorizontal: 20,
     },
 
@@ -228,6 +388,13 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
 
+    indicacioncode:{
+        textAlign: 'center',
+        color: '#000',
+        fontSize: 24,
+        fontWeight: '300'
+    },
+
     button: {
         backgroundColor: '#0F74F2',
         width: 200,
@@ -250,14 +417,35 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
 
-    slider:{
-    },
-
     btnContainer:{
         // backgroundColor: '#f00',
         position: 'relative',
         bottom: 30,
         alignItems: 'center'
+    },
+
+    input: {
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        borderColor: '#f0f0f0',
+        borderWidth: 3,
+        marginBottom: 15,
+    },
+
+    ggcontianer:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+        marginHorizontal: 120
+    },
+
+    ggelement:{
+        fontSize: 60,
+        color: '#0F74F2'
     }
 })
 
