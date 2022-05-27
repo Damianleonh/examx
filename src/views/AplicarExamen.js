@@ -14,6 +14,7 @@ const AplicarExamen = ({navigation}) => {
     const [ plantillaSelected, setPlantillaSelected ] = useState(null)
     const [ alumnosSelected, setAlumnosSelected ] = useState([])
     const [ gradoGrupo, setGradoGrupo] = useState({grado:"", grupo:""})
+    const [ plantillaId, setPlantillaId] = useState()
     
     const [ scrollIndex, setScrollIndex] = useState(1) //Variables de control
     const [ buttonState, setButtonState ] = useState(true)
@@ -86,11 +87,11 @@ const AplicarExamen = ({navigation}) => {
 
     //Subir datos
     const fetchData = () => {
-        addDoc(collection(db,"examen'es"),{
+        addDoc(collection(db,"examenes"),{
             maestro: auth.currentUser.email,
             codigoExamen: codigoExamen,
             alumnosSelected: alumnosSelected,
-            plantillaSelected: plantillaSelected,
+            plantillaid: plantillaId,
             gradoGrupo: gradoGrupo
         }).then(()=>{
             Alert.alert("Alerta", "Examen creado correctamente")
@@ -134,6 +135,7 @@ const AplicarExamen = ({navigation}) => {
 
 
     }
+
     return (
         <SafeAreaView style={styles.safeaview}>
             <View style={styles.container}>
@@ -156,30 +158,37 @@ const AplicarExamen = ({navigation}) => {
                     <ScrollView
                         alwaysBounceVertical={false}
                     >
+                        
                         {/* -------Mapeo de plantillas----------*/}
-                        { plantillas.map((plantilla, index) =>(
+                        { plantillas.length > 0 &&  
+                            plantillas.map((plantilla, index) =>(
 
-                            <Pressable
-                                onPress={()=>{
-                                    setPlantillaSelected(index)
-                                    setButtonState(false)
-                                }}
-                            >
-                                <View style={ plantillaSelected === index ? styles.plantCardSelec : styles.plantCard } >
+                                <Pressable
+                                    onPress={()=>{
+                                        setPlantillaId(plantilla.id)
+                                        setPlantillaSelected(index)
+                                        setButtonState(false)
+                                    }}
+                                >
+                                    <View style={ plantillaSelected === index ? styles.plantCardSelec : styles.plantCard } >
 
-                                    <View style={styles.viewTxt}>                            
-                                        <Text style={styles.plantCardTxt}>
-                                            {plantilla.titulo}
-                                        </Text>
-                                        <Text style={styles.tmpEstTxt}>
-                                            Tiempo total: {calcularTiempo(plantilla)}
-                                        </Text>
+                                        <View style={styles.viewTxt}>                            
+                                            <Text style={styles.plantCardTxt}>
+                                                {plantilla.titulo}
+                                            </Text>
+                                            <Text style={styles.tmpEstTxt}>
+                                                Tiempo total: {calcularTiempo(plantilla)}
+                                            </Text>
+                                        </View>
+
                                     </View>
+                                </Pressable>
+                            ))
+                        }
 
-                                </View>
-                            </Pressable>
-
-                        )) }
+                        { plantillas.length === 0 && (
+                            <Text style={styles.advertencia}>No tienes plantillas creadas</Text>
+                        )}
                         {/* ------------------------------------ */}
                     </ScrollView>
                 </View>
@@ -473,6 +482,13 @@ const styles = StyleSheet.create({
     ggelement:{
         fontSize: 60,
         color: '#0F74F2'
+    },
+
+    advertencia:{
+        marginTop: 20,
+        textAlign: 'center',
+        fontSize: 18,
+        color: '#8e8e8e'
     }
 })
 

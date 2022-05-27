@@ -65,7 +65,16 @@ const CrearPlantilla = () => {
 
     }
 
-
+    const generarCodigo = (length) => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * 
+            charactersLength));
+        }
+        return result;
+    }
 
 
     const subirPlantilla = () => {
@@ -75,6 +84,7 @@ const CrearPlantilla = () => {
         const user = auth.currentUser.email;
 
         addDoc(collection(db, "plantillas"), {
+            id: generarCodigo(10),
             autor: user,
             titulo: tituloPlantilla,
             fechaCreacion: {date, hora} ,
