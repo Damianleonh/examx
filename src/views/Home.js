@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import { FontAwesome } from '@expo/vector-icons'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
+import { collection, where, query, onSnapshot, addDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
+
 
 const onSignOut = () => {
+
 
   Alert.alert(
     "Alerta",
@@ -38,6 +42,57 @@ const onSignOut = () => {
 }
 
 const Home = ( {navigation} ) => {
+
+  const [ examenes, setExamenes ] = useState([])
+  const [ plantillas, setPlantillas] = useState([])
+
+  useEffect(()=>{
+    //Consulta examenes
+    const q = query(collection(db, "examenes"), where("maestro", "==", auth.currentUser.email))
+    const unsuscribe = onSnapshot(q,(querySnapshot)=>{
+        let tempArr = []
+        querySnapshot.forEach((doc) => {
+            tempArr.push(doc.data())
+        })
+
+        setExamenes(tempArr)
+    })
+
+    const q2 = query(collection(db, "plantillas"), where("autor", "==", auth.currentUser.email))
+    const unsuscribe2 = onSnapshot(q2, (snap)=>{
+        let tempPlant = []
+        snap.forEach((alumno)=>{
+            tempPlant.push(alumno.data())
+        })
+        setPlantillas(tempPlant)
+    })
+    
+  },[])
+  
+
+  const cantidadAlumnos = (index) =>{
+
+    let cant = examenes[index].alumnosSelected.length
+    if(cant===1){
+      cant += " Alumno"
+    }else{
+      cant += " Alumnos"
+    }
+    return cant
+
+  }
+
+  const nombrePlantillas = (index) => {
+    let nm = ""
+    plantillas.forEach((item) =>{
+      if (item.id === index){
+        nm = item.titulo
+      }
+    })
+
+    return nm
+  }
+
   return (
     <SafeAreaView style={styles.container} >
 
@@ -95,7 +150,7 @@ const Home = ( {navigation} ) => {
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
               style={styles.degradado}
             >
-              <Text style={styles.cardTxt}>Alumnos</Text>
+              <Text style={styles.cardTxt}>Historial</Text>
             </LinearGradient>
           </Pressable>
 
@@ -108,14 +163,14 @@ const Home = ( {navigation} ) => {
               start={{x: 1, y: 0}} end={{x: 0, y: 1}}
               style={styles.degradado}
             >
-              <Text style={styles.cardTxt}>Aplicar examen</Text>
+              <Text style={styles.cardTxt}>Crear examen</Text>
             </LinearGradient>
           </Pressable>
         </View>
 
         {/* Subtitulo examenes en curso */}
         <Text style={styles.titulo2}>
-            Examenes en curso
+            Examenes
         </Text>
 
         {/* Lista de examenes en curso */}
@@ -123,53 +178,29 @@ const Home = ( {navigation} ) => {
           alwaysBounceVertical={true}
         >
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
+          { examenes.length > 0 && 
+            examenes.map((examen, index) => (
 
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
+              <View style={styles.exmCardContainer}>
 
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
+                {/* Grado y grupo */}
+                <Text style={styles.gradoTxt}>{examen.gradoGrupo}</Text>
 
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
-            </View>
-          </View>
+                {/* Linea azul */}
+                <View style={styles.linea}></View>
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
+                {/* Nombre de examen y porcentaje */}
+                <View>
+                  <Text style={styles.examenTitle}>{ nombrePlantillas(examen.plantillaid)}</Text>
+                  <Text style={styles.examenPorc}> {cantidadAlumnos(index)}</Text>
+                </View>
+              </View>
+            ))
+          }
 
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
-            </View>
-          </View>
-
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
-
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>30%</Text>
-            </View>
-          </View>
+          { examenes.length === 0 && (
+              <Text style={styles.advertencia}>No tienes examenes creados</Text>
+          )}
 
         </ScrollView>
     </SafeAreaView>
@@ -264,6 +295,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 68,
     right: 0
+  },
+
+  advertencia:{
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#8e8e8e'
   }
 })
 
