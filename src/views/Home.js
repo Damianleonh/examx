@@ -1,5 +1,5 @@
-import React from 'react'
-import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert} from 'react-native'
+import React, { useEffect } from 'react'
+import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import { FontAwesome } from '@expo/vector-icons'
