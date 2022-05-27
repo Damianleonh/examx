@@ -10,9 +10,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 import { db } from '../../firebase-config';
-
-
-
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
 
@@ -138,6 +135,10 @@ const CrearPlantilla = () => {
     return (
 
         <SafeAreaView style={styles.container}>
+
+        <View style={styles.containerBtnsPrincipales}>
+        
+        </View>
             {/* container principal */}
             <View style={styles.containerF}>
 
@@ -335,6 +336,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flex: 1
     },
+    containerBtnsPrincipales:{
+        height:0,
+        backgroundColor:'red'
+    },   
     containerF: {
         marginHorizontal: 20,
         marginTop: 10,
