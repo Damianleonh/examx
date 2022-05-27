@@ -65,11 +65,13 @@ const AplicarExamen = () => {
         return tiempo+"s"
     }
 
+    //Calcular scroll horizontal, dividir pantallas
     const horizontalScroll = () =>{
         scrollRef.current.scrollTo({ x: Dimensions.get('window').width * scrollIndex})
         setScrollIndex(scrollIndex+1)
     }
 
+    //Generar codigo de exmen
     const generarCodigo = (length) => {
         var result           = '';
         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
