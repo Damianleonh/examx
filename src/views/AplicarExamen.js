@@ -84,8 +84,10 @@ const AplicarExamen = ({navigation}) => {
         return result;
     }
 
+    //Subir datos
     const fetchData = () => {
-        addDoc(collection(db,"examenes"),{
+        addDoc(collection(db,"examen'es"),{
+            maestro: auth.currentUser.email,
             codigoExamen: codigoExamen,
             alumnosSelected: alumnosSelected,
             plantillaSelected: plantillaSelected,
