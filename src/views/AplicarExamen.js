@@ -1,10 +1,10 @@
 import React, { useState, useLayoutEffect, useRef, useEffect} from 'react'
-import { View, SafeAreaView, Text, StyleSheet, ScrollView, Dimensions, Image, Pressable, TextInput} from 'react-native'
+import { View, SafeAreaView, Text, StyleSheet, ScrollView, Dimensions, Image, Pressable, TextInput, Alert} from 'react-native'
 import { auth } from '../../database/firebase'
-import { collection, where, query, onSnapshot, doc } from 'firebase/firestore';
+import { collection, where, query, onSnapshot, addDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 
-const AplicarExamen = () => {
+const AplicarExamen = ({navigation}) => {
 
     // ----Zona de hooks---
     const [ plantillas, setPlantillas ] = useState([]) //Datos de firebase
@@ -13,7 +13,8 @@ const AplicarExamen = () => {
     const [ codigoExamen, setCodigoExamen] = useState("") //Datos de examen
     const [ plantillaSelected, setPlantillaSelected ] = useState(null)
     const [ alumnosSelected, setAlumnosSelected ] = useState([])
-
+    const [ gradoGrupo, setGradoGrupo] = useState({grado:"", grupo:""})
+    
     const [ scrollIndex, setScrollIndex] = useState(1) //Variables de control
     const [ buttonState, setButtonState ] = useState(true)
     const [ correosBusqueda, setCorreosBusqueda ] = useState([])
@@ -81,6 +82,30 @@ const AplicarExamen = () => {
             charactersLength));
         }
         return result;
+    }
+
+    const fetchData = () => {
+        addDoc(collection(db,"examenes"),{
+            codigoExamen: codigoExamen,
+            alumnosSelected: alumnosSelected,
+            plantillaSelected: plantillaSelected,
+            gradoGrupo: gradoGrupo
+        }).then(()=>{
+            Alert.alert("Alerta", "Examen creado correctamente")
+            navigation.navigate("Home")
+        }).catch(()=>{
+            Alert.alert("Alerta", "Ocurrio algun error al crear el examen")
+        })
+    }
+
+    const validarGGBtn = (txt) =>{
+        setGradoGrupo(txt)
+
+        if(txt.length >= 2){
+            setButtonState(false)
+        }else{
+            setButtonState(true)
+        }
     }
 
     //Funcion buscar alumno
@@ -256,15 +281,12 @@ const AplicarExamen = () => {
                     <View style={styles.ggcontianer}>
                         <TextInput
                             style={styles.ggelement}
-                            placeholder='6'
-                            keyboardType='number-pad'
+                            placeholder='6D'
+                            keyboardType='default'
                             maxLength={2}
-                        />
-
-                        <TextInput
-                            style={styles.ggelement}
-                            placeholder='D'
-                            maxLength={2}
+                            onChangeText={ (txt) =>{
+                                validarGGBtn(txt)
+                            }}
                         />
                     </View>
                 </View>
@@ -276,6 +298,7 @@ const AplicarExamen = () => {
                 <Pressable style={buttonState ? styles.buttondis : styles.button}
                     onPress={()=> {
                         horizontalScroll()
+                        { scrollIndex >= 3 && fetchData()}
                         setButtonState(true)
                     }}
                     disabled={buttonState}
