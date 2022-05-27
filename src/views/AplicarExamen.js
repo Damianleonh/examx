@@ -22,6 +22,14 @@ const AplicarExamen = ({navigation}) => {
     const scrollRef = useRef()
 
     useEffect(()=>{
+        navigation.addListener('beforeRemove', (e) =>{
+            console.log("Pa atras")
+            
+        })
+
+    },[navigation])
+
+    useEffect(()=>{
         if(alumnosSelected.length===0){
             setButtonState(true)
         }

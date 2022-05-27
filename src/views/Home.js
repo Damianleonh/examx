@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import { FontAwesome } from '@expo/vector-icons'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'

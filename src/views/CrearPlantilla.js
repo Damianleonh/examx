@@ -11,8 +11,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 import { db } from '../../firebase-config';
 
-
-
 import { RadioButton, Text } from 'react-native-paper';
 const CrearPlantilla = () => {
 
@@ -308,7 +306,7 @@ const CrearPlantilla = () => {
                                 pressed ? { opacity: 0.2 } : {},
                             ]}
 
-                            onPress={() => Alert.alert('Subir plantilla', 'Seguro de subir la plantilla?', [
+                            onPress={() => Alert.alert('Subir plantilla', '¿Estas seguro de crear la plantilla?', [
                                 {
                                     text: 'Cancelar',
                                     onPress: () => {return},
