@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView,Alert} from "react-native";
 import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -81,7 +81,8 @@ const CrearPlantilla = () => {
 
 
     const subirPlantilla = () => {
-        const numRandom = Math.floor( Math.random() * (999999 - 100000)) + 100000
+
+        
         const auth = getAuth();
         const user = auth.currentUser.email;
 
@@ -307,7 +308,14 @@ const CrearPlantilla = () => {
                                 pressed ? { opacity: 0.2 } : {},
                             ]}
 
-                            onPress={() => { subirPlantilla() }}
+                            onPress={() => Alert.alert('Subir plantilla', 'Seguro de subir la plantilla?', [
+                                {
+                                    text: 'Cancelar',
+                                    onPress: () => {return},
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => subirPlantilla() },
+                            ]) }
                             
                         >
                             <LinearGradient
