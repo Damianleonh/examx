@@ -329,7 +329,18 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                                 </View>
                             ))}
 
+<<<<<<< HEAD
                             {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
+=======
+                            onPress={() => Alert.alert('Subir plantilla', '¿Estas seguro de crear la plantilla?', [
+                                {
+                                    text: 'Cancelar',
+                                    onPress: () => { return },
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => subirPlantilla() },
+                            ])}
+>>>>>>> 8d08bf5e591006006d75856605f488e32093e169
 
 
 
