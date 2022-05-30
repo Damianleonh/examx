@@ -65,7 +65,8 @@ const VerPlantillas = () => {
                                     name="edit" 
                                 />
                             </Pressable>
-                            <Pressable>
+                            <Pressable
+                                onPress={console.log(plantillas)}>
                                 <FontAwesome 
                                     style={styles.iconfaws}
                                     color={"#808080"}

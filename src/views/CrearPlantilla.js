@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal } from "react-native";
 import ModalSelector from 'react-native-modal-selector'
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,9 +11,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 import { db } from '../../firebase-config';
 import { RadioButton, Text } from 'react-native-paper';
-const CrearPlantilla = () => {
 
 
+
+const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlantilla }) => {
     //VARIABLE PRINCIPAL DE PREGUNTAS
 
     const [preguntas, setPreguntas] = useState(
@@ -23,7 +24,15 @@ const CrearPlantilla = () => {
             opcion: ['Opcion'],
             respuestaCorrecta: null
         }])
-
+    
+    const [preguntasComparacion, setPreguntasCom] = useState(
+        [{
+            tituloPregunta: '',
+            tiempo: '5',
+            opcion: ['Opcion'],
+            respuestaCorrecta: null
+        }])
+ 
 
     const agregarPregunta = () => {
         setPreguntas
@@ -70,17 +79,33 @@ const CrearPlantilla = () => {
 
     const subirPlantilla = () => {
 
+        if (tituloPlantilla === "" || preguntas === preguntasComparacion ){
+            
+            Alert.alert('Error', 'LLena los campos');
+        }else{
 
-        const auth = getAuth();
-        const user = auth.currentUser.email;
 
-        addDoc(collection(db, "plantillas"), {
-            autor: user,
-            titulo: tituloPlantilla,
-            fechaCreacion: { date, hora },
-            fechaActualizacion: null,
-            preguntas: preguntas,
-        });
+            const auth = getAuth();
+            const user = auth.currentUser.email;
+
+            addDoc(collection(db, "plantillas"), {
+                autor: user,
+                titulo: tituloPlantilla,
+                fechaCreacion: { date, hora },
+                fechaActualizacion: null,
+                preguntas: preguntas,
+            });
+            Alert.alert(
+                'Listo!',
+                'Tu platilla se ha subido con exito 🥳',
+                [
+                    { text: 'Ok', onPress: () => { setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla), setPreguntas(preguntasComparacion)} },
+                ],
+                {
+                    cancelable: true
+                }
+            );
+        }     
     }
 
 
@@ -133,213 +158,206 @@ const CrearPlantilla = () => {
 
 
     return (
+        <Modal
+            animationType='slide'
+            presentationStyle="pageSheet"
+            visible={modalVisibleCrearPlantilla}
+        >
+            <SafeAreaView style={styles.container}>
 
-        <SafeAreaView style={styles.container}>
+                <View style={styles.containerBtnsPrincipales}>
 
-            <View style={styles.containerBtnsPrincipales}>
+                    <Pressable
 
-                <Pressable>
-                    <Text style={styles.txtBtnSalir}>
-                        Salir
-                    </Text>
-                </Pressable>
+                        style={({ pressed }) => [
+                            { borderRadius: 10 },
+                            pressed ? { opacity: 0.2 } : {},
+                        ]}
 
-                <Pressable>
-                    <Text style={styles.txtBtnSalir}>
-                        Subir plantilla
-                    </Text>
-                </Pressable>
-
-            </View>
-            {/* container principal */}
-            <View style={styles.containerF}>
-
-                {/* Titulos */}
-                <TextInput style={styles.txtForm}
-                    placeholder="Titulo de la plantilla"
-                    onChangeText={(txt) => { setTituloPlantilla(txt) }}
-                    placeholderTextColor="#a0a0a0"
-                />
-
-                <Text style={styles.txtFecha}>Fecha de creación: {date} {hora}</Text>
-
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    animated={true}
-
-                >
-
-                    <ScrollView
-                        alwaysBounceVertical={false}
-                        showsVerticalScrollIndicator={false}
-
+                        onPress={() => { setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
                     >
-                        {/************* AREA DE PREGUNTAS ********************/}
-                        {preguntas.map((pregunta, index) => (
+                        <Text style={styles.txtBtnSalir}>
+                            Salir
+                        </Text>
+                    </Pressable>
 
-                            <View key={index} style={styles.containerPregunta}>
-
-                                <View style={styles.containerPreguntaA}>
-                                    <TextInput
-                                        style={styles.textInputPregunta}
-                                        placeholder="Ingresa la pregunta"
-                                        placeholderTextColor="#a0a0a0"
-                                        onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
-                                        multiline={true}
-                                    >
-                                    </TextInput>
-
-                                    <View style={styles.containerBotones}>
-                                        <View style={styles.containerPreguntaSegundos}>
-                                            <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
-                                            <ModalSelector
-                                                style={styles.modalselector}
-                                                initValue={pregunta.tiempo}
-                                                cancelButtonAccessibilityLabel={'Cancelar'}
-                                                data={data}
-                                                touchableActiveOpacity={0}
-                                                onChange={(option) => { pregunta.tiempo = option.label }}
-                                                value={pregunta.tiempo}
-                                                onModalOpen={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)}
-                                                selectStyle={{ borderWidth: 0 }}
-                                                selectTextStyle={{ color: '#0F74F2' }}
-                                                initValueTextStyle={{ color: '#0F74F2' }}>
-                                            </ModalSelector>
-                                        </View>
-
-                                        <View style={styles.containerBotones}>
-                                            <Pressable
-                                                style={({ pressed }) => [
-                                                    { borderRadius: 10 },
-                                                    pressed ? { opacity: 0.2 } : {},
-                                                ]}
-                                                onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "", Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) }}>
-                                                <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
-                                            </Pressable>
-                                        </View>
-
-                                    </View>
-
-
-
-                                </View>
-
-                                <View style={styles.containerPreguntaC}>
-                                    <Pressable
-                                        style={({ pressed }) => [
-                                            { borderRadius: 10 },
-                                            pressed ? { opacity: 0.2 } : {},
-                                        ]}
-                                        onPress={() => { pregunta.opcion.push('opcion'), console.log(preguntas), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
-                                        <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
-                                    </Pressable>
-
-
-                                </View>
-
-
-
-                                {pregunta.opcion.map((opc, ind) => (
-                                    <View key={ind} style={styles.containerPreguntaC}>
-
-
-                                        {elegirOpcion(pregunta, ind)}
-
-                                        <TextInput
-                                            style={styles.textInputOpcion}
-                                            placeholder='Ingresa una respuesta'
-                                            placeholderTextColor="#a0a0a0"
-                                            onChangeText={(text) => { pregunta.opcion[ind] = text }}
-                                        >
-                                        </TextInput>
-
-
-                                        <View
-                                            style={styles.containerOpcionesBtns}>
-                                            <Pressable
-                                                style={({ pressed }) => [
-                                                    { borderRadius: 10 },
-                                                    pressed ? { opacity: 0.2 } : {},
-                                                ]}
-                                                onPress={() => { pregunta.opcion.splice(ind, 1), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error) }}
-                                            >
-                                                <Text style={styles.txtbtnAgregarInciso}>Eliminar</Text>
-                                            </Pressable>
-
-                                        </View>
-                                    </View>
-                                ))}
-
-
-                            </View>
-                        ))}
-
-                        {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
-
-
-
-
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                {
-                                    borderRadius: 10,
-                                    marginTop: 30,
-                                    alignItems: "center",
-                                    marginBottom: 20
-                                },
-                                pressed ? { opacity: 0.2 } : {},
-                            ]}
-                            onPress={() => { console.log(preguntas), agregarPregunta(), Haptics.selectionAsync() }}>
-                            <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
-                        </Pressable>
-
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                {
-                                    borderRadius: 10,
-                                    marginTop: 30,
-                                    alignItems: "center",
-                                    marginBottom: 200,
-                                    backgroundColor: '#0F74F2',
-                                    height: 50,
-                                    width: 200,
-                                    alignSelf: "center",
-
-                                },
-                                pressed ? { opacity: 0.2 } : {},
-                            ]}
-
-                            onPress={() => Alert.alert('Subir plantilla', 'Seguro de subir la plantilla?', [
+                    <Pressable
+                   
+                        style={({ pressed }) => [
+                            { borderRadius: 10 },
+                            pressed ? { opacity: 0.2 } : {},
+                        ]}
+                        onPress={() => {
+                            Alert.alert('Subir plantilla', '¿Seguro de subir la plantilla?', [
                                 {
                                     text: 'Cancelar',
                                     onPress: () => { return },
                                     style: 'cancel',
                                 },
-                                { text: 'OK', onPress: () => subirPlantilla() },
-                            ])}
+                                { text: 'OK', onPress: () => { if (tituloPlantilla === ""){
+                                    Alert.alert('No', "no")
+                                } else { subirPlantilla() }} },
+                            ]), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+                        }}
+                    >
+                        <Text style={styles.txtBtnSalir}>
+                            Subir plantilla
+                        </Text>
+                    </Pressable>
+
+                </View>
+                {/* container principal */}
+                <View style={styles.containerF}>
+
+                    {/* Titulos */}
+                    <TextInput style={styles.txtForm}
+                        placeholder="Titulo de la plantilla"
+                        onChangeText={(txt) => { setTituloPlantilla(txt) }}
+                        placeholderTextColor="#a0a0a0"
+                    />
+
+                    <Text style={styles.txtFecha}>Fecha de creación: {date} {hora}</Text>
+
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? "padding" : "height"}
+                        animated={true}
+
+                    >
+
+                        <ScrollView
+                            alwaysBounceVertical={false}
+                            showsVerticalScrollIndicator={false}
 
                         >
-                            <LinearGradient
-                                colors={["#8C4DE9", "#0083B0"]}
-                                start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
-                                style={styles.degradado}
-                            >
+                            {/************* AREA DE PREGUNTAS ********************/}
+                            {preguntas.map((pregunta, index) => (
 
-                                <Text style={styles.textBtnSubir}>Subir plantilla</Text>
+                                <View key={index} style={styles.containerPregunta}>
 
-                            </LinearGradient>
+                                    <View style={styles.containerPreguntaA}>
+                                        <TextInput
+                                            style={styles.textInputPregunta}
+                                            placeholder="Ingresa la pregunta"
+                                            placeholderTextColor="#a0a0a0"
+                                            onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
+                                            multiline={true}
+                                        >
+                                        </TextInput>
 
-                        </Pressable>
+                                        <View style={styles.containerBotones}>
+                                            <View style={styles.containerPreguntaSegundos}>
+                                                <AntDesign name="clockcircle" size={20} color="#a0a0a0" />
+                                                <ModalSelector
+                                                    style={styles.modalselector}
+                                                    initValue={pregunta.tiempo}
+                                                    cancelButtonAccessibilityLabel={'Cancelar'}
+                                                    data={data}
+                                                    touchableActiveOpacity={0}
+                                                    onChange={(option) => { pregunta.tiempo = option.label }}
+                                                    value={pregunta.tiempo}
+                                                    onModalOpen={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)}
+                                                    selectStyle={{ borderWidth: 0 }}
+                                                    selectTextStyle={{ color: '#0F74F2' }}
+                                                    initValueTextStyle={{ color: '#0F74F2' }}>
+                                                </ModalSelector>
+                                            </View>
 
-                    </ScrollView>
+                                            <View style={styles.containerBotones}>
+                                                <Pressable
+                                                    style={({ pressed }) => [
+                                                        { borderRadius: 10 },
+                                                        pressed ? { opacity: 0.2 } : {},
+                                                    ]}
+                                                    onPress={() => { eliminarPregunta(index), pregunta.tituloPregunta = "", Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) }}>
+                                                    <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
+                                                </Pressable>
+                                            </View>
 
-                </KeyboardAvoidingView>
+                                        </View>
 
 
-            </View>
-        </SafeAreaView>
+
+                                    </View>
+
+                                    <View style={styles.containerPreguntaC}>
+                                        <Pressable
+                                            style={({ pressed }) => [
+                                                { borderRadius: 10 },
+                                                pressed ? { opacity: 0.2 } : {},
+                                            ]}
+                                            onPress={() => { pregunta.opcion.push('opcion'), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                                            <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
+                                        </Pressable>
+
+
+                                    </View>
+
+
+
+                                    {pregunta.opcion.map((opc, ind) => (
+                                        <View key={ind} style={styles.containerPreguntaC}>
+
+
+                                            {elegirOpcion(pregunta, ind)}
+
+                                            <TextInput
+                                                style={styles.textInputOpcion}
+                                                placeholder='Ingresa una respuesta'
+                                                placeholderTextColor="#a0a0a0"
+                                                onChangeText={(text) => { pregunta.opcion[ind] = text }}
+                                            >
+                                            </TextInput>
+
+
+                                            <View
+                                                style={styles.containerOpcionesBtns}>
+                                                <Pressable
+                                                    style={({ pressed }) => [
+                                                        { borderRadius: 10 },
+                                                        pressed ? { opacity: 0.2 } : {},
+                                                    ]}
+                                                    onPress={() => { pregunta.opcion.splice(ind, 1), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error) }}
+                                                >
+                                                    <Text style={styles.txtbtnAgregarInciso}>Eliminar</Text>
+                                                </Pressable>
+
+                                            </View>
+                                        </View>
+                                    ))}
+
+
+                                </View>
+                            ))}
+
+                            {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
+
+
+
+
+
+                            <Pressable
+                                style={({ pressed }) => [
+                                    {
+                                        borderRadius: 10,
+                                        marginTop: 30,
+                                        alignItems: "center",
+                                        marginBottom: 20
+                                    },
+                                    pressed ? { opacity: 0.2 } : {},
+                                ]}
+                                onPress={() => {agregarPregunta(), Haptics.selectionAsync() }}>
+                                <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
+                            </Pressable>
+
+
+                        </ScrollView>
+
+                    </KeyboardAvoidingView>
+
+
+                </View>
+            </SafeAreaView>
+        </Modal>
     );
 };
 
@@ -349,12 +367,13 @@ const styles = StyleSheet.create({
         flex: 1
     },
     containerBtnsPrincipales: {
+        marginTop: 10,
         height: 40,
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
         paddingHorizontal: 22,
-        flexDirection:'row'
+        flexDirection: 'row'
     },
     containerF: {
         marginHorizontal: 20,

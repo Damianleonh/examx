@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, } from 'react-native'
+import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, Modal} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes'
 import { FontAwesome } from '@expo/vector-icons'
@@ -7,7 +7,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
 import { collection, where, query, onSnapshot, addDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-
+import CrearPlantilla from './CrearPlantilla'
 
 const onSignOut = () => {
 
@@ -42,6 +42,10 @@ const onSignOut = () => {
 }
 
 const Home = ( {navigation} ) => {
+
+
+
+  const [modalVisibleCrearPlantilla, setModalVisibleCrearPlantilla] = useState(false)
 
   const [ examenes, setExamenes ] = useState([])
   const [ plantillas, setPlantillas] = useState([])
@@ -117,7 +121,7 @@ const Home = ( {navigation} ) => {
 
           <Pressable 
             style={styles.cardOpcion}
-            onPress={() => navigation.navigate('CrearPlantilla')}
+            onPress={() => setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla)}
           >
             <LinearGradient
               colors={["#8C4DE9", "#0083B0"]}
@@ -127,6 +131,12 @@ const Home = ( {navigation} ) => {
               <Text style={styles.cardTxt}>Crear plantilla</Text>
             </LinearGradient>
           </Pressable>
+
+
+          <CrearPlantilla
+            modalVisibleCrearPlantilla ={modalVisibleCrearPlantilla}
+            setModalVisibleCrearPlantilla = {setModalVisibleCrearPlantilla}
+          />
 
           <Pressable 
             style={styles.cardOpcion}
