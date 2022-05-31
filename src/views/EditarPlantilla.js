@@ -1,68 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal } from "react-native";
-import ModalSelector from 'react-native-modal-selector'
+
+import React, { useLayoutEffect, useState, useEffect } from 'react'
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal, Text } from "react-native";
+import * as Haptics from 'expo-haptics';
 import { AntDesign } from '@expo/vector-icons';
+import ModalSelector from 'react-native-modal-selector'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient'
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { updateDoc } from 'firebase/firestore';
+import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import { RadioButton, Text } from 'react-native-paper';
 
-//Variables del picker modal
-let indx = 0;
-const data = [
-    { key: indx++, section: true, label: 'Segundos' },
-    { key: indx++, label: '5 ' },
-    { key: indx++, label: '10 ' },
-    { key: indx++, label: '20 ' },
-    { key: indx++, label: '30' },
-    { key: indx++, label: '60' },
-];
-
-const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlantilla }) => {
-    //VARIABLE PRINCIPAL DE PREGUNTAS
-
-    const [preguntas, setPreguntas] = useState(
-        [{
-            tituloPregunta: '',
-            tiempo: '5',
-            opcion: ['Opcion'],
-            respuestaCorrecta: null
-        }])
-
-    const [preguntasComparacion, setPreguntasCom] = useState(
-        [{
-            tituloPregunta: '',
-            tiempo: '5',
-            opcion: ['Opcion'],
-            respuestaCorrecta: null
-        }])
+const EditarPlantilla = ({ modalVisible, setModalVisible, id, setId, plantillaEditable, setPlantillaEditable, preguntas, setPreguntas }) => {
 
 
-    const agregarPregunta = () => {
-        setPreguntas
-            ([...preguntas, {
-                tituloPregunta: '',
-                tiempo: '5',
-                opcion: ['Opcion'],
-                respuestaCorrecta: null
-            }])
-    }
 
-    const eliminarPregunta = (index) => {
-        const cambio = [...preguntas]
-        cambio.splice(index, 1)
-        setPreguntas(cambio)
-    }
+    const [tituloPlantilla, setTituloPlantilla] = useState(plantillaEditable.tituloPlantilla)
 
-    const renderizarOpciones = () => {
-        setPreguntas([...preguntas])
-    }
-
+    const [date, setDate] = useState("")
+    const [hora, setHora] = useState("")
 
     const elegirOpcion = (obj, i) => {
         if (obj.respuestaCorrecta === i) {
@@ -84,46 +41,79 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
     }
 
 
+    const renderizarOpciones = () => {
+        setPreguntas([...preguntas])
+    }
+
+    const eliminarPregunta = (index) => {
+        const cambio = [...preguntas]
+        cambio.splice(index, 1)
+        setPreguntas(cambio)
+    }
+
+    const agregarPregunta = () => {
+        setPreguntas
+            ([...preguntas, {
+                tituloPregunta: '',
+                tiempo: '5',
+                opcion: ['Opcion'],
+                respuestaCorrecta: null
+            }])
+    }
+
+    const tituloPreguntaFuncion = (pregunta) => {
+
+        if (pregunta.tituloPregunta === "") {
+            return (<TextInput
+                style={styles.textInputPregunta}
+                placeholder="Ingresa una pregunta"
+                placeholderTextColor="#a0a0a0"
+                onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
+                multiline={true}
+            >
+            </TextInput>)
+        } else {
+            return (<TextInput
+                style={styles.textInputPregunta}
+                placeholder={pregunta.tituloPregunta}
+                placeholderTextColor="#a0a0a0"
+                onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
+                multiline={true}
+            >
+            </TextInput>)
+        }
+    }
 
 
     const subirPlantilla = () => {
+        const q = query(collection(db, "plantillas"), where("id", "==", id))
+        const unsuscribe = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                updateDoc(doc.ref,{
+                    titulo: tituloPlantilla,
+                    fechaActualizacion: { date, hora },
+                    preguntas: preguntas
+                })
+            })
+        })
 
-        if (tituloPlantilla === "" || preguntas === preguntasComparacion) {
-
-            Alert.alert('Error', 'LLena los campos');
-        } else {
-
-
-            const auth = getAuth();
-            const user = auth.currentUser.email;
-            const id = Math.floor(Math.random() * (999999 - 111111) + 111111)
-
-            addDoc(collection(db, "plantillas"), {
-                autor: user,
-                titulo: tituloPlantilla,
-                fechaCreacion: { date, hora },
-                fechaActualizacion: null,
-                preguntas: preguntas,
-                id: id
-            });
-            Alert.alert(
-                'Listo!',
-                'Tu platilla se ha subido con exito 🥳',
-                [
-                    { text: 'Ok', onPress: () => { setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla), setPreguntas(preguntasComparacion) } },
-                ],
-                {
-                    cancelable: true
-                }
-            );
-        }
+        Alert.alert(
+            'Listo!',
+            'Tu platilla se ha subido con exito 🥳',
+            [
+                { text: 'Ok', onPress: () => { setModalVisible(!modalVisible), setId('') } },
+            ],
+            {
+                cancelable: true
+            }
+        );
     }
 
 
     //Variables del picker modal
     let indx = 0;
     const data = [
-        { key: indx++, section: true, label: 'Segundos' },
+        { key: indx++, section: true, label: 'SegundechaCreacion: { date, hora },os' },
         { key: indx++, label: '5 ' },
         { key: indx++, label: '10 ' },
         { key: indx++, label: '20 ' },
@@ -163,19 +153,14 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
 
     }, []);
     //TERMINA AREA FECHA --------------------------------------------------------------
-    const [date, setDate] = useState("")
-    const [hora, setHora] = useState("")
-    const [tituloPlantilla, setTituloPlantilla] = useState("")
-
 
     return (
         <Modal
             animationType='slide'
             presentationStyle="pageSheet"
-            visible={modalVisibleCrearPlantilla}
+            visible={modalVisible}
         >
             <SafeAreaView style={styles.container}>
-
                 <View style={styles.containerBtnsPrincipales}>
 
                     <Pressable
@@ -185,7 +170,7 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                             pressed ? { opacity: 0.2 } : {},
                         ]}
 
-                        onPress={() => { setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                        onPress={() => { setModalVisble(!modalVisible), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
                     >
                         <Text style={styles.txtBtnSalir}>
                             Salir
@@ -202,13 +187,13 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                             Alert.alert('Subir plantilla', '¿Seguro de subir la plantilla?', [
                                 {
                                     text: 'Cancelar',
-                                    onPress: () => { return },
+                                    onPress: () => { subirPlantilla(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) },
                                     style: 'cancel',
                                 },
                                 {
                                     text: 'OK', onPress: () => {
                                         if (tituloPlantilla === "") {
-                                            Alert.alert('Error', "Rellena el formulario")
+                                            Alert.alert('No', "no")
                                         } else { subirPlantilla() }
                                     }
                                 },
@@ -221,46 +206,44 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                     </Pressable>
 
                 </View>
-                {/* container principal */}
-                <View style={styles.containerF}>
 
-                    {/* Titulos */}
+                <View style={styles.containerA}>
                     <TextInput style={styles.txtForm}
-                        placeholder="Titulo de la plantilla"
+                        placeholder={plantillaEditable.titulo}
                         onChangeText={(txt) => { setTituloPlantilla(txt) }}
                         placeholderTextColor="#a0a0a0"
                     />
 
-                    <Text style={styles.txtFecha}>Fecha de creación: {date} {hora}</Text>
+                    <Text style={styles.txtFecha}>Fecha de edición: {date} {hora}</Text>
+                </View>
 
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === "ios" ? "padding" : "height"}
-                        animated={true}
+                <View style={styles.containerF}>
+                    
+                <KeyboardAvoidingView
+                    
+                        style={{flexDirection: 'column', zIndex:0, marginHorizontal:20}} 
+                        behavior={Platform.OS === 'ios' ? 'position' : null}
 
                     >
-
                         <ScrollView
+                            animated={true}
                             alwaysBounceVertical={false}
                             showsVerticalScrollIndicator={false}
                             automaticallyAdjustContentInsets={true}
                             style={styles.scroll}
-
                         >
-                            {/************* AREA DE PREGUNTAS ********************/}
+
+
                             {preguntas.map((pregunta, index) => (
 
-                                <View key={index} style={styles.containerPregunta}>
+
+                                <View
+                                    key={index}
+                                    style={styles.containerPregunta}>
 
                                     <View style={styles.containerPreguntaA}>
 
-                                        <TextInput
-                                            style={styles.textInputPregunta}
-                                            placeholder="Ingresa la pregunta"
-                                            placeholderTextColor="#a0a0a0"
-                                            onChangeText={(txt) => { pregunta.tituloPregunta = txt }}
-                                            multiline={true}
-                                        >
-                                        </TextInput>
+                                        {tituloPreguntaFuncion(pregunta)}
 
                                         <View style={styles.containerBotones}>
                                             <View style={styles.containerPreguntaSegundos}>
@@ -293,8 +276,6 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
 
                                         </View>
 
-
-
                                     </View>
 
                                     <View style={styles.containerPreguntaC}>
@@ -303,13 +284,11 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                                                 { borderRadius: 10 },
                                                 pressed ? { opacity: 0.2 } : {},
                                             ]}
-                                            onPress={() => { pregunta.opcion.push('opcion'), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                                            onPress={() => { pregunta.opcion.push('Ingresa Opcion'), renderizarOpciones(), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
                                             <Text style={styles.txtbtnAgregarInciso}>Agregar opcion</Text>
                                         </Pressable>
 
-
                                     </View>
-
 
 
                                     {pregunta.opcion.map((opc, ind) => (
@@ -320,7 +299,7 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
 
                                             <TextInput
                                                 style={styles.textInputOpcion}
-                                                placeholder='Ingresa una respuesta'
+                                                placeholder={opc}
                                                 placeholderTextColor="#a0a0a0"
                                                 onChangeText={(text) => { pregunta.opcion[ind] = text }}
                                             >
@@ -343,13 +322,9 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                                         </View>
                                     ))}
 
-
                                 </View>
+
                             ))}
-
-                            {/* $$$$$$$$$$$$$$$$$$$$ TERMINA AREA DE PREGUNTAS $$$$$$$$$$$$$$$$$$$$$ */}
-
-
 
                             <View style={styles.containerFin}>
 
@@ -364,47 +339,43 @@ const CrearPlantilla = ({ modalVisibleCrearPlantilla, setModalVisibleCrearPlanti
                                         },
                                         pressed ? { opacity: 0.2 } : {},
                                     ]}
-                                    onPress={() => { agregarPregunta(), Haptics.selectionAsync() }}>
+                                    onPress={() => { agregarPregunta(), Haptics.selectionAsync(), console.log(preguntas) }}>
                                     <AntDesign name="pluscircle" size={35} color="#a0a0a0" />
                                 </Pressable>
 
 
                             </View>
-
                         </ScrollView>
 
                     </KeyboardAvoidingView>
-
-
                 </View>
+
             </SafeAreaView>
+
         </Modal>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        flex: 1
+        flex: 1,
     },
     containerBtnsPrincipales: {
-        marginTop: 10,
-        height: 40,
+        height: 50,
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 5,
         paddingHorizontal: 22,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        zIndex: 2
     },
-    containerF: {
+    containerA: {
         marginHorizontal: 20,
-        marginTop: 10,
+        zIndex:2,
+        backgroundColor: '#fff',
     },
-    scroll: {
-        paddingBottom: 50,
-        flexGrow: 1,
-    },
-
     txtForm: {
         fontSize: 30,
         color: "#000",
@@ -539,10 +510,14 @@ const styles = StyleSheet.create({
         fontWeight: "400",
     },
     containerFin: {
-        marginBottom:200
+        marginBottom: 200
     },
+    scroll: {
+        paddingBottom: 50,
+        flexGrow: 1,
 
+    },
 
 })
 
-export default CrearPlantilla
+export default EditarPlantilla

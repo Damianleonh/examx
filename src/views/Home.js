@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, Modal} from 'react-native'
+import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert, Modal } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { FontAwesome } from '@expo/vector-icons'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
 import { collection, where, query, onSnapshot, addDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import * as Haptics from 'expo-haptics';
 import CrearPlantilla from './CrearPlantilla'
 
 const onSignOut = () => {
@@ -25,12 +26,12 @@ const onSignOut = () => {
       {
         text: 'Si',
         onPress: () => {
-          signOut(auth).catch( error => {
+          signOut(auth).catch(error => {
             Alert.alert(
               "Error",
               "Error al cerrar sesion"
             )
-        
+
           })
         }
       }
@@ -40,45 +41,45 @@ const onSignOut = () => {
 
 }
 
-const Home = ( {navigation} ) => {
+const Home = ({ navigation }) => {
 
 
 
   const [modalVisibleCrearPlantilla, setModalVisibleCrearPlantilla] = useState(false)
 
-  const [ examenes, setExamenes ] = useState([])
-  const [ plantillas, setPlantillas] = useState([])
+  const [examenes, setExamenes] = useState([])
+  const [plantillas, setPlantillas] = useState([])
 
-  useEffect(()=>{
+  useEffect(() => {
     //Consulta examenes
     const q = query(collection(db, "examenes"), where("maestro", "==", auth.currentUser.email))
-    const unsuscribe = onSnapshot(q,(querySnapshot)=>{
-        let tempArr = []
-        querySnapshot.forEach((doc) => {
-            tempArr.push(doc.data())
-        })
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+      let tempArr = []
+      querySnapshot.forEach((doc) => {
+        tempArr.push(doc.data())
+      })
 
-        setExamenes(tempArr)
+      setExamenes(tempArr)
     })
 
     const q2 = query(collection(db, "plantillas"), where("autor", "==", auth.currentUser.email))
-    const unsuscribe2 = onSnapshot(q2, (snap)=>{
-        let tempPlant = []
-        snap.forEach((alumno)=>{
-            tempPlant.push(alumno.data())
-        })
-        setPlantillas(tempPlant)
+    const unsuscribe2 = onSnapshot(q2, (snap) => {
+      let tempPlant = []
+      snap.forEach((alumno) => {
+        tempPlant.push(alumno.data())
+      })
+      setPlantillas(tempPlant)
     })
-    
-  },[])
-  
 
-  const cantidadAlumnos = (index) =>{
+  }, [])
+
+
+  const cantidadAlumnos = (index) => {
 
     let cant = examenes[index].alumnosSelected.length
-    if(cant===1){
+    if (cant === 1) {
       cant += " Alumno"
-    }else{
+    } else {
       cant += " Alumnos"
     }
     return cant
@@ -87,8 +88,8 @@ const Home = ( {navigation} ) => {
 
   const nombrePlantillas = (index) => {
     let nm = ""
-    plantillas.forEach((item) =>{
-      if (item.id === index){
+    plantillas.forEach((item) => {
+      if (item.id === index) {
         nm = item.titulo
       }
     })
@@ -99,152 +100,170 @@ const Home = ( {navigation} ) => {
   return (
     <SafeAreaView style={styles.container} >
 
-        {/* Titulo */}
-        <Text style={styles.titulo}>
-            Inicio
-        </Text>
+      {/* Titulo */}
+      <Text style={styles.titulo}>
+        Inicio
+      </Text>
 
-        {/* Boton cerrar sesión */}
-        <SafeAreaView style={styles.logouticon}>
-          <FontAwesome 
-            color={"#0F74F2"}
-            borderRadius="100" 
-            size={25} 
-            name="sign-out" 
-            onPress={onSignOut}
-          />
-        </SafeAreaView>
+      {/* Boton cerrar sesión */}
+      <SafeAreaView style={styles.logouticon}>
+        <FontAwesome
+          color={"#0F74F2"}
+          borderRadius="100"
+          size={25}
+          name="sign-out"
+          onPress={onSignOut}
+        />
+      </SafeAreaView>
 
-        {/* Barra de opciones */}
-        <View style={styles.optionsMenu}>
+      {/* Barra de opciones */}
+      <View style={styles.optionsMenu}>
 
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla)}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Crear plantilla</Text>
-            </LinearGradient>
-          </Pressable>
-
-
-          <CrearPlantilla
-            modalVisibleCrearPlantilla ={modalVisibleCrearPlantilla}
-            setModalVisibleCrearPlantilla = {setModalVisibleCrearPlantilla}
-          />
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('VerPlantillas')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Ver plantillas</Text>
-            </LinearGradient>
-          </Pressable>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('Alumnos')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Historial</Text>
-            </LinearGradient>
-          </Pressable>
-
-          <Pressable 
-            style={styles.cardOpcion}
-            onPress={() => navigation.navigate('AplicarExamen')}
-          >
-            <LinearGradient
-              colors={["#8C4DE9", "#0083B0"]}
-              start={{x: 1, y: 0}} end={{x: 0, y: 1}}
-              style={styles.degradado}
-            >
-              <Text style={styles.cardTxt}>Crear examen</Text>
-            </LinearGradient>
-          </Pressable>
-        </View>
-
-        {/* Subtitulo examenes en curso */}
-        <Text style={styles.titulo2}>
-            Examenes
-        </Text>
-
-        {/* Lista de examenes en curso */}
-        <ScrollView style={styles.scroll}
-          alwaysBounceVertical={true}
+        <Pressable
+          style={({ pressed }) => [
+            styles.cardOpcion,
+            pressed ? { opacity: 0.9, padding: 3 } : {},
+          ]}
+          onPress={() => { setModalVisibleCrearPlantilla(!modalVisibleCrearPlantilla), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
         >
+          <LinearGradient
+            colors={["#8C4DE9", "#0083B0"]}
+            start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
+            style={styles.degradado}
+          >
+            <Text style={styles.cardTxt}>Crear plantilla</Text>
+          </LinearGradient>
+        </Pressable>
 
-          { examenes.length > 0 && 
-            examenes.map((examen, index) => (
 
-              <View style={styles.exmCardContainer}>
+        <CrearPlantilla
+          modalVisibleCrearPlantilla={modalVisibleCrearPlantilla}
+          setModalVisibleCrearPlantilla={setModalVisibleCrearPlantilla}
+        />
 
-                {/* Grado y grupo */}
-                <Text style={styles.gradoTxt}>{examen.gradoGrupo}</Text>
+        <Pressable
 
-                {/* Linea azul */}
-                <View style={styles.linea}></View>
+          style={({ pressed }) => [
+            styles.cardOpcion,
+            pressed ? { opacity: 0.9, padding: 3 } : {},
+          ]}
+          onPress={() => { navigation.navigate('VerPlantillas'), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+        >
+          <LinearGradient
+            colors={["#8C4DE9", "#0083B0"]}
+            start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
+            style={styles.degradado}
+          >
+            <Text style={styles.cardTxt}>Ver plantillas</Text>
+          </LinearGradient>
+        </Pressable>
 
-                {/* Nombre de examen y porcentaje */}
-                <View>
-                  <Text style={styles.examenTitle}>{ nombrePlantillas(examen.plantillaid)}</Text>
-                  <Text style={styles.examenPorc}> {cantidadAlumnos(index)}</Text>
-                </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.cardOpcion,
+            pressed ? { opacity: 0.9, padding: 3 } : {},
+          ]}
+          onPress={() => { navigation.navigate('Alumnos'), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+        >
+          <LinearGradient
+            colors={["#8C4DE9", "#0083B0"]}
+            start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
+            style={styles.degradado}
+          >
+            <Text style={styles.cardTxt}>Historial</Text>
+          </LinearGradient>
+        </Pressable>
+
+        <Pressable
+
+          style={({ pressed }) => [
+            styles.cardOpcion,
+            pressed ? { opacity: 0.9} : {},
+          ]}
+          onPress={() => { navigation.navigate('AplicarExamen'), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+        >
+          <LinearGradient
+            colors={["#8C4DE9", "#0083B0"]}
+            start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }}
+            style={styles.degradado}
+          >
+            <Text style={styles.cardTxt}>Crear examen</Text>
+          </LinearGradient>
+        </Pressable>
+      </View>
+
+      {/* Subtitulo examenes en curso */}
+      <Text style={styles.titulo2}>
+        Examenes
+      </Text>
+
+      {/* Lista de examenes en curso */}
+      <ScrollView style={styles.scroll}
+        alwaysBounceVertical={true}
+      >
+
+        {examenes.length > 0 &&
+          examenes.map((examen, index) => (
+
+            <View style={styles.exmCardContainer}>
+
+              {/* Grado y grupo */}
+              <Text style={styles.gradoTxt}>{examen.gradoGrupo}</Text>
+
+              {/* Linea azul */}
+              <View style={styles.linea}></View>
+
+              {/* Nombre de examen y porcentaje */}
+              <View>
+                <Text style={styles.examenTitle}>{nombrePlantillas(examen.plantillaid)}</Text>
+                <Text style={styles.examenPorc}> {cantidadAlumnos(index)}</Text>
               </View>
-            ))
-          }
+            </View>
+          ))
+        }
 
-          { examenes.length === 0 && (
-              <Text style={styles.advertencia}>No tienes examenes creados</Text>
-          )}
+        {examenes.length === 0 && (
+          <Text style={styles.advertencia}>No tienes examenes creados</Text>
+        )}
 
-        </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     marginHorizontal: 20,
   },
 
-  titulo:{
+  titulo: {
     marginTop: 10,
     fontSize: 30
   },
-  
-  optionsMenu:{
+
+  optionsMenu: {
     marginTop: 20,
     flexDirection: 'row'
   },
 
-  cardOpcion:{
+  cardOpcion: {
     marginRight: 10,
     borderRadius: 10,
     flex: 1,
     height: 85,
+    shadowColor: '#171717',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
 
-  cardTxt:{
+  cardTxt: {
     textAlign: 'center',
     color: '#fff',
     marginHorizontal: 4
   },
-  
-  degradado:{
+
+  degradado: {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -253,14 +272,14 @@ const styles = StyleSheet.create({
     height: '100%'
   },
 
-  titulo2:{
+  titulo2: {
     marginTop: 30,
     marginBottom: 10,
     fontSize: 30,
     color: "#a0a0a0"
   },
 
-  exmCardContainer:{
+  exmCardContainer: {
     borderColor: '#D9D9D9',
     borderWidth: 1,
     borderRadius: 10,
@@ -271,33 +290,33 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
 
-  gradoTxt:{
+  gradoTxt: {
     fontSize: 30,
     fontWeight: '500',
     color: '#0F74F2'
   },
 
-  linea:{
+  linea: {
     width: 1,
     backgroundColor: "#0F74F2",
     height: "70%",
     marginHorizontal: 10
   },
 
-  examenTitle:{
+  examenTitle: {
     color: "#000",
     // fontSize: 16
   },
 
-  examenPorc:{
+  examenPorc: {
     color: "#0F74F2",
   },
 
-  scroll:{
+  scroll: {
     height: '100%'
   },
 
-  logouticon:{
+  logouticon: {
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -306,7 +325,7 @@ const styles = StyleSheet.create({
     right: 0
   },
 
-  advertencia:{
+  advertencia: {
     marginTop: 20,
     textAlign: 'center',
     fontSize: 18,

@@ -1,17 +1,36 @@
-import React, { useLayoutEffect, useState} from 'react'
-import { View, SafeAreaView, Text, StyleSheet, Pressable, ScrollView} from 'react-native'
+import React, { useLayoutEffect, useState } from 'react'
+import { View, SafeAreaView, Text, StyleSheet, Pressable, ScrollView, Alert, Image, Dimensions } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { auth } from '../../database/firebase'
-import {  doc, getDocs, collection, where, query, onSnapshot } from 'firebase/firestore';
+import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { set } from 'react-native-reanimated';
+import EditarPlantilla from './EditarPlantilla';
+import * as Haptics from 'expo-haptics';
 
 const VerPlantillas = () => {
 
-    const [ plantillas, setPlantillas ] = useState([])
+    //VARIABLES 
+    const [id, setId] = useState("")
+    const [modalVisible, setModalVisible] = useState(false)
 
-    useLayoutEffect( ()=>{
+    const [plantillas, setPlantillas] = useState([])
+    const [preguntas, setPreguntas] = useState(
+        [{
+            tituloPregunta: '',
+            tiempo: '5',
+            opcion: ['Opcion'],
+            respuestaCorrecta: null
+        }])
+
+    const [plantillaEditable, setPlantillaEditable] = useState([])
+
+
+    //RECOGER PLANTILLAS
+    useLayoutEffect(() => {
         const q = query(collection(db, "plantillas"), where("autor", "==", auth.currentUser.email))
-        const unsuscribe = onSnapshot(q,(querySnapshot)=>{
+        const unsuscribe = onSnapshot(q, (querySnapshot) => {
 
             let tempArr = []
             querySnapshot.forEach((doc) => {
@@ -22,13 +41,23 @@ const VerPlantillas = () => {
         })
     }, [])
 
-    const calcularTiempo = (obj) =>{
+    const calcularTiempo = (obj) => {
         let tiempo = 0
-        obj.preguntas.forEach((val)=>{
+        obj.preguntas.forEach((val) => {
             tiempo += parseInt(val.tiempo)
         })
+        return tiempo + "s"
+    }
 
-        return tiempo+"s"
+
+    const borrarPlantilla = (obj) => {
+        const q = query(collection(db, "plantillas"), where("id", "==", obj.id))
+        const unsuscribe = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                deleteDoc(doc.ref)
+            })
+        })
+
     }
 
     return (
@@ -41,11 +70,12 @@ const VerPlantillas = () => {
             <ScrollView style={styles.plantillasScroll} alwaysBounceVertical={false}>
 
                 {/* -------Una sola plantilla---------*/}
-                { plantillas.map((plantilla, index) =>(
+                {plantillas.map((plantilla, index) => (
 
                     <View style={styles.plantCard} >
 
-                        <View style={styles.viewTxt}>                            
+
+                        <View style={styles.viewTxt}>
                             <Text style={styles.plantCardTxt}>
                                 {plantilla.titulo}
                             </Text>
@@ -56,50 +86,100 @@ const VerPlantillas = () => {
 
                         <View style={styles.accbtn}>
                             <Pressable
+
+                                style={({ pressed }) => [
+                                    {
+                                        marginRight:10
+                                    },
+                                    pressed ? { opacity: 0.2, padding: 5} : {},
+                                ]}
+                                onPress={() =>
+                                    {Alert.alert(
+                                        'Editar',
+                                        '¿Deseas editar la plantilla? 📝',
+                                        [
+                                            { text: 'Cancelar', onPress: () => { return } },
+                                            { text: 'Editar plantilla', onPress: () => { setPreguntas(plantilla.preguntas), setPlantillaEditable(plantilla), setModalVisible(true), setId(plantilla.id), Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) } },
+                                        ],
+                                        {
+                                            cancelable: true
+                                        }
+                                ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                                
                             >
-                                <FontAwesome 
-                                    style={styles.iconfaws}
-                                    color={"#808080"}
-                                    borderRadius="100" 
-                                    size={20} 
-                                    name="edit" 
-                                />
+                                <MaterialCommunityIcons name="file-document-edit" size={27} color="#a0a0a0" />
                             </Pressable>
+
+
+
                             <Pressable
-                                onPress={console.log(plantillas)}>
-                                <FontAwesome 
-                                    style={styles.iconfaws}
-                                    color={"#808080"}
-                                    borderRadius="100" 
-                                    size={20} 
-                                    name="trash" 
-                                />
+
+                                style={({ pressed }) => [
+                                    {
+                                        marginRight: 10
+                                    },
+                                    pressed ? { opacity: 0.2, padding:5} : {},
+                                ]}
+                                onPress={() =>
+                                    {Alert.alert(
+                                    'Eliminar plantilla',
+                                    '¿Deseas eliminar la plantilla? 🚫',
+                                    [
+                                        { text: 'Cancelar', onPress: () => { return } },
+                                        { text: 'Borrar plantilla', onPress: () => borrarPlantilla(plantilla) },
+                                    ],
+                                    {
+                                        cancelable: true
+                                    }
+                                ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                                <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
                             </Pressable>
+
+
                         </View>
+
+
+                        <EditarPlantilla
+                            modalVisible={modalVisible}
+                            setModalVisible={setModalVisible}
+                            id = {id}
+                            setId = {setId}
+                            plantillaEditable = {plantillaEditable}
+                            setPlantillaEditable={setPlantillaEditable}
+
+                            preguntas = {preguntas}
+                            setPreguntas = {setPreguntas}
+
+                        />
                     </View>
-                )) }
+                ))}
                 {/* ------------------------------------ */}
+
+
+
+
             </ScrollView>
+
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         marginHorizontal: 20,
     },
-    
-    titulo:{
+
+    titulo: {
         marginTop: 10,
         fontSize: 30
     },
 
-    plantillasScroll:{
+    plantillasScroll: {
         marginTop: 20,
         flexDirection: 'column'
     },
-      
-    plantCard:{
+
+    plantCard: {
         borderColor: '#D9D9D9',
         borderWidth: 1,
         borderRadius: 10,
@@ -111,34 +191,41 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
 
-    iconfaws:{
+    iconfaws: {
         marginLeft: 5,
-        borderColor: '#d0d0d0',
-        borderWidth: 1,
-        borderRadius: 4,
         padding: 4
     },
 
-    plantCardTxt:{
+    plantCardTxt: {
         fontSize: 16,
         color: '#808080',
         fontWeight: '500'
     },
 
-    accbtn:{
+    accbtn: {
         flexDirection: 'row',
         alignItems: 'center'
     },
 
-    viewTxt:{
-        
+    viewTxt: {
+
     },
 
-    tmpEstTxt:{
+    tmpEstTxt: {
         marginTop: 5,
         color: '#0F74F2'
 
-    }
+    },
+
+    btmImg: {
+        width: Dimensions.get('window').width,
+        height: 200,
+        zIndex: -1,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
 })
 
 export default VerPlantillas
