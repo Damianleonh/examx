@@ -69,94 +69,96 @@ const VerPlantillas = () => {
             {/* Plantillas */}
             <ScrollView style={styles.plantillasScroll} alwaysBounceVertical={false}>
 
-                {/* -------Una sola plantilla---------*/}
-                {plantillas.map((plantilla, index) => (
-
-                    <View style={styles.plantCard} >
 
 
-                        <View style={styles.viewTxt}>
-                            <Text style={styles.plantCardTxt}>
-                                {plantilla.titulo}
-                            </Text>
-                            <Text style={styles.tmpEstTxt}>
-                                Tiempo total: {calcularTiempo(plantilla)}
-                            </Text>
-                        </View>
+                {plantillas.length > 0 &&
+                    plantillas.map((plantilla, index) => (      
+                        <View style={styles.plantCard} >
 
-                        <View style={styles.accbtn}>
-                            <Pressable
 
-                                style={({ pressed }) => [
-                                    {
-                                        marginRight:10
-                                    },
-                                    pressed ? { opacity: 0.2, padding: 5} : {},
-                                ]}
-                                onPress={() =>
-                                    {Alert.alert(
-                                        'Editar',
-                                        '¿Deseas editar la plantilla? 📝',
+                            <View style={styles.viewTxt}>
+                                <Text style={styles.plantCardTxt}>
+                                    {plantilla.titulo}
+                                </Text>
+                                <Text style={styles.tmpEstTxt}>
+                                    Tiempo total: {calcularTiempo(plantilla)}
+                                </Text>
+                            </View>
+
+                            <View style={styles.accbtn}>
+                                <Pressable
+
+                                    style={({ pressed }) => [
+                                        {
+                                            marginRight:10
+                                        },
+                                        pressed ? { opacity: 0.2, padding: 5} : {},
+                                    ]}
+                                    onPress={() =>
+                                        {Alert.alert(
+                                            'Editar',
+                                            '¿Deseas editar la plantilla? 📝',
+                                            [
+                                                { text: 'Cancelar', onPress: () => { return } },
+                                                { text: 'Editar plantilla', onPress: () => { setPreguntas(plantilla.preguntas), setPlantillaEditable(plantilla), setModalVisible(true), setId(plantilla.id), Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) } },
+                                            ],
+                                            {
+                                                cancelable: true
+                                            }
+                                    ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                                    
+                                >
+                                    <MaterialCommunityIcons name="file-document-edit" size={27} color="#a0a0a0" />
+                                </Pressable>
+
+
+
+                                <Pressable
+
+                                    style={({ pressed }) => [
+                                        {
+                                            marginRight: 10
+                                        },
+                                        pressed ? { opacity: 0.2, padding:5} : {},
+                                    ]}
+                                    onPress={() =>
+                                        {Alert.alert(
+                                        'Eliminar plantilla',
+                                        '¿Deseas eliminar la plantilla? 🚫',
                                         [
                                             { text: 'Cancelar', onPress: () => { return } },
-                                            { text: 'Editar plantilla', onPress: () => { setPreguntas(plantilla.preguntas), setPlantillaEditable(plantilla), setModalVisible(true), setId(plantilla.id), Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) } },
+                                            { text: 'Borrar plantilla', onPress: () => borrarPlantilla(plantilla) },
                                         ],
                                         {
                                             cancelable: true
                                         }
-                                ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
-                                
-                            >
-                                <MaterialCommunityIcons name="file-document-edit" size={27} color="#a0a0a0" />
-                            </Pressable>
+                                    ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
+                                    <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
+                                </Pressable>
 
 
-
-                            <Pressable
-
-                                style={({ pressed }) => [
-                                    {
-                                        marginRight: 10
-                                    },
-                                    pressed ? { opacity: 0.2, padding:5} : {},
-                                ]}
-                                onPress={() =>
-                                    {Alert.alert(
-                                    'Eliminar plantilla',
-                                    '¿Deseas eliminar la plantilla? 🚫',
-                                    [
-                                        { text: 'Cancelar', onPress: () => { return } },
-                                        { text: 'Borrar plantilla', onPress: () => borrarPlantilla(plantilla) },
-                                    ],
-                                    {
-                                        cancelable: true
-                                    }
-                                ), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}>
-                                <MaterialCommunityIcons name="delete-forever" size={27} color="#a0a0a0" />
-                            </Pressable>
+                            </View>
 
 
+                            <EditarPlantilla
+                                modalVisible={modalVisible}
+                                setModalVisible={setModalVisible}
+                                id = {id}
+                                setId = {setId}
+                                plantillaEditable = {plantillaEditable}
+                                setPlantillaEditable={setPlantillaEditable}
+
+                                preguntas = {preguntas}
+                                setPreguntas = {setPreguntas}
+
+                            />
                         </View>
+                    ))
+                }
 
-
-                        <EditarPlantilla
-                            modalVisible={modalVisible}
-                            setModalVisible={setModalVisible}
-                            id = {id}
-                            setId = {setId}
-                            plantillaEditable = {plantillaEditable}
-                            setPlantillaEditable={setPlantillaEditable}
-
-                            preguntas = {preguntas}
-                            setPreguntas = {setPreguntas}
-
-                        />
-                    </View>
-                ))}
-                {/* ------------------------------------ */}
-
-
-
+                {plantillas.length === 0 && (
+                    <Text style={styles.advertencia}>No tienes examenes creados</Text>
+                )}
 
             </ScrollView>
 
@@ -226,6 +228,13 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
     },
+
+    advertencia: {
+        marginTop: 20,
+        textAlign: 'center',
+        fontSize: 18,
+        color: '#8e8e8e'
+    }
 })
 
 export default VerPlantillas
