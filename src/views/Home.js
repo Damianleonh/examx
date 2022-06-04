@@ -8,6 +8,8 @@ import { collection, where, query, onSnapshot, addDoc, doc } from 'firebase/fire
 import { db } from '../../firebase-config';
 import * as Haptics from 'expo-haptics';
 import CrearPlantilla from './CrearPlantilla'
+import { Fontisto } from '@expo/vector-icons';
+import ModalExamen from './ModalExamen'
 
 const onSignOut = () => {
 
@@ -44,11 +46,16 @@ const onSignOut = () => {
 const Home = ({ navigation }) => {
 
 
+  <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
 
   const [modalVisibleCrearPlantilla, setModalVisibleCrearPlantilla] = useState(false)
 
   const [examenes, setExamenes] = useState([])
   const [plantillas, setPlantillas] = useState([])
+
+  const [modalExamen, setModalExamen] = useState(false)
+
+  const [tituloPlantilla, setTituloPlantilla] = useState('')
 
   useEffect(() => {
     //Consulta examenes
@@ -178,7 +185,7 @@ const Home = ({ navigation }) => {
 
           style={({ pressed }) => [
             styles.cardOpcion,
-            pressed ? { opacity: 0.9} : {},
+            pressed ? { opacity: 0.9 } : {},
           ]}
           onPress={() => { navigation.navigate('AplicarExamen'), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
         >
@@ -217,6 +224,24 @@ const Home = ({ navigation }) => {
               <View>
                 <Text style={styles.examenTitle}>{nombrePlantillas(examen.plantillaid)}</Text>
                 <Text style={styles.examenPorc}> {cantidadAlumnos(index)}</Text>
+              </View>
+
+              <View style={styles.opcionArea}>
+                <Pressable 
+                  style={({ pressed }) => [
+                    pressed ? { opacity: 0.1, padding: 1 } : {},
+                  ]}
+                  onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), setTituloPlantilla(nombrePlantillas(examen.plantillaid)) }}>
+                  <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
+                </Pressable>
+
+                <ModalExamen 
+                  modalExamen={modalExamen}
+                  setModalExamen = {setModalExamen}
+                  idExamen = {examen.codigoExamen}
+                  examen = {examen}
+                  plantilla = {plantillas}
+                  titulo= {tituloPlantilla}/>
               </View>
             </View>
           ))
@@ -330,7 +355,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     color: '#8e8e8e'
-  }
+  },
+
+  opcionArea: {
+    position: 'relative',
+    marginLeft: 180,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 })
 
 export default Home

@@ -170,7 +170,7 @@ const EditarPlantilla = ({ modalVisible, setModalVisible, id, setId, plantillaEd
                             pressed ? { opacity: 0.2 } : {},
                         ]}
 
-                        onPress={() => { setModalVisble(!modalVisible), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                        onPress={() => { setModalVisible(!modalVisible), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
                     >
                         <Text style={styles.txtBtnSalir}>
                             Salir
