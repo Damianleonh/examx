@@ -5,6 +5,9 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
 import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import { Fontisto } from '@expo/vector-icons';
+import ModalAplicarExamen from './ModalAplicarExamen'
+import * as Haptics from 'expo-haptics';
 
 const onSignOut = () => {
 
@@ -45,6 +48,9 @@ const HomeAlumno = ( {navigation} ) => {
   const [ plantillas, setPlantillas ] = useState([])
   const [ isloaded, setIsLoaded ] = useState(false)
   const [ tamUnic, setTamUnic ] = useState(null)
+  const [modalExamen,setModalExamen] = useState(false)
+
+  const [miPlantilla,setMiPlantilla] = useState([])
 
   //Obtener examenes creados por ID
   useLayoutEffect(()=>{
@@ -109,11 +115,23 @@ const HomeAlumno = ( {navigation} ) => {
 
   //Retornar el nombre de la plantilla
   const nombrePlantillas = (index) => {
-
     let nm = ""
     plantillas.forEach((item) => {
       if (item.id === index) {
+
         nm = item.titulo
+      }
+    })
+
+    return nm
+  }
+
+
+  const obtenerPlantilla = (plantillaid) => {
+    let nm = ""
+    plantillas.forEach((item) => {
+      if (item.id === plantillaid) {
+        nm = item
       }
     })
 
@@ -228,6 +246,26 @@ const HomeAlumno = ( {navigation} ) => {
                   <Text style={styles.examenTitle}>{nombrePlantillas(examen.plantillaid)}</Text>
                   <Text style={styles.examenPorc}> {calcularTiempo(examen.plantillaid)}</Text>
                 </View>
+
+
+                <View style={styles.opcionArea}>
+                <Pressable 
+                  style={({ pressed }) => [
+                    pressed ? { opacity: 0.1, padding: 1 } : {},
+                  ]}
+                  onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),setMiPlantilla(obtenerPlantilla(examen.plantillaid))}}>
+                  <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
+                </Pressable>
+
+                <ModalAplicarExamen
+                modalExamen={modalExamen}
+                setModalExamen = {setModalExamen}
+                examen={examen}
+                plantilla = { miPlantilla}
+                />
+
+                
+              </View>
               </View>
             ))
           }
@@ -336,7 +374,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     color: '#8e8e8e'
-}
+},
+opcionArea: {
+  position: 'relative',
+  marginLeft: 120,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
 })
 
 export default HomeAlumno
