@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Text, View, SafeAreaView, ScrollView, Pressable, StyleSheet, Alert} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../database/firebase'
+import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
 
 const onSignOut = () => {
 
@@ -35,7 +37,108 @@ const onSignOut = () => {
 
 }
 
+
 const HomeAlumno = ( {navigation} ) => {
+
+  const [ misExamenes, setMisExamenes] = useState([])  
+  const [ misPlantillasID, setMisPlantillasID ] = useState([])
+  const [ plantillas, setPlantillas ] = useState([])
+  const [ isloaded, setIsLoaded ] = useState(false)
+  const [ tamUnic, setTamUnic ] = useState(null)
+
+  //Obtener examenes creados por ID
+  useLayoutEffect(()=>{
+    const q = query(collection(db, "examenes"), where("alumnosSelected", "array-contains-any", [auth.currentUser.email]))
+    const unsuscribe = onSnapshot(q, (querySnapshot) => {
+
+        let tempArr = []
+        querySnapshot.forEach((doc) => {
+            tempArr.push(doc.data())
+        })
+
+        setMisExamenes(tempArr)
+
+        if( tempArr.length > 0){
+
+          let tmpPlantID = []
+          tempArr.forEach( (v)=>{
+            tmpPlantID.push(v.plantillaid)
+          })
+          setMisPlantillasID(tmpPlantID)
+        }
+
+    })
+
+  }, [])
+
+  //Filtrar y agregar plantillas por ID
+  useLayoutEffect(()=>{
+
+    setPlantillas([])
+
+    misPlantillasID.forEach((a)=>{
+
+      const q = query(collection(db, "plantillas"), where("id", "==", a))
+      const unsuscribe = onSnapshot(q, (querySnapshot) => {
+  
+          querySnapshot.forEach((doc) => {
+            setPlantillas( last => [ ...last, doc.data()])
+          })
+      })   
+    })
+
+    if(plantillas.length > 0){
+      setIsLoaded(true)
+    }
+
+  }, [misPlantillasID])
+
+
+  //Filtrar plantillas duplicadas
+  useLayoutEffect(()=>{
+    let uniqueArray = plantillas.filter((value, index, self) =>
+      index === self.findIndex((t) => (
+        t.id === value.id
+      ))
+    )
+    
+    setPlantillas(uniqueArray)
+    setTamUnic(uniqueArray.length)
+
+  },[isloaded])
+
+  //Retornar el nombre de la plantilla
+  const nombrePlantillas = (index) => {
+
+    let nm = ""
+    plantillas.forEach((item) => {
+      if (item.id === index) {
+        nm = item.titulo
+      }
+    })
+
+    return nm
+  }
+
+  
+  const calcularTiempo = (obj) =>{
+
+    let tiempo = 0
+    let ctrl = true
+
+    plantillas.forEach((e) =>{
+        if(obj === e.id && ctrl){ 
+          e.preguntas.forEach(j => {
+            tiempo = tiempo + parseInt(j.tiempo)
+          })
+          ctrl = false
+        }
+    })
+
+    return "Tiempo estimado: "+tiempo+"s"
+
+  }
+
   return (
     <SafeAreaView style={styles.container} >
 
@@ -109,54 +212,29 @@ const HomeAlumno = ( {navigation} ) => {
         <ScrollView style={styles.scroll}
           alwaysBounceVertical={true}
         >
+          {misExamenes.length > 0 &&
+            misExamenes.map((examen, index) => (
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
+              <View style={styles.exmCardContainer} key={index}>
 
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
+                {/* Grado y grupo */}
+                <Text style={styles.gradoTxt}>{examen.gradoGrupo}</Text>
 
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
+                {/* Linea azul */}
+                <View style={styles.linea}></View>
 
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
-          </View>
+                {/* Nombre de examen y porcentaje */}
+                <View>
+                  <Text style={styles.examenTitle}>{nombrePlantillas(examen.plantillaid)}</Text>
+                  <Text style={styles.examenPorc}> {calcularTiempo(examen.plantillaid)}</Text>
+                </View>
+              </View>
+            ))
+          }
 
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
-
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
-          </View>
-
-          {/* Un solo elemento */}
-          <View style={styles.exmCardContainer}>
-
-            {/* Grado y grupo */}
-            <Text style={styles.gradoTxt}>6D</Text>
-
-            {/* Linea azul */}
-            <View style={styles.linea}></View>
-
-            {/* Nombre de examen y porcentaje */}
-            <View>
-              <Text style={styles.examenTitle}>Examen 1</Text>
-              <Text style={styles.examenPorc}>Tiempo estimado: 5m 45s</Text>
-            </View>
-          </View>
+          {misExamenes.length === 0 && (
+            <Text style={styles.advertencia}>No se te ha asignado ningun examen</Text>
+          )}
 
         </ScrollView>
     </SafeAreaView>
@@ -251,7 +329,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 68,
     right: 0
-  }
+  },
+
+  advertencia: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#8e8e8e'
+}
 })
 
 export default HomeAlumno
