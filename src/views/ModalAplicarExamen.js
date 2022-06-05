@@ -6,9 +6,9 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
 
 
     const estadoExamen = () => {
-        if(examen.estado === 'Inactivo'){
+        if(examen.estado === 'inactivo'){
             return(
-                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examenState.estado}</Text> </Text>
+                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examen.estado}</Text> </Text>
             )
         }
     }
@@ -59,23 +59,22 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
                         <Text style={styles.txtBtnSalir}>
                             Comenzar Examen
                         </Text>
-
-                      
                     </Pressable>
-
                 </View>
+
+                
 
                 <View style={styles.containerTituloExamen}>
 
                     <Text style={styles.textTitulo}>Area de examen</Text>
                     <Text style={styles.textSubtitulo}>Examen: {plantilla.titulo} </Text>
-                    {estadoExamen}
+                    {estadoExamen()}
 
                 </View>
-
                 <View style={styles.containerBtnEstado}>
-
                 </View>
+
+            
 
             </SafeAreaView>
 
