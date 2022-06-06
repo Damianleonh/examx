@@ -5,9 +5,9 @@ import * as Haptics from 'expo-haptics';
 import { db } from '../../firebase-config';
 import { auth } from '../../database/firebase'
 
-const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
+const ModalAplicarExamen = ({ modalExamen, setModalExamen, examen, plantilla }) => {
 
-    const [estadoExamenState,setEstadoExamenState] = useState([
+    const [estadoExamenState, setEstadoExamenState] = useState([
         {
             maestro: auth.currentUser.email,
             codigoExamen: '11111',
@@ -17,21 +17,23 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
             estado: null
         }
     ])
-    
+
+    const [pregunstas, setPreguntas] = useState(plantilla.preguntas)
+
+
+    const [preguntaActual, setPreguntaActual] = useState(0)
+
+
 
     useEffect(() => {
         const q = query(collection(db, "examenes"), where("codigoExamen", "==", examen.codigoExamen))
         const unsuscribe = onSnapshot(q, (querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    setEstadoExamenState([doc.data()])
-                    console.log('pass')
+            querySnapshot.forEach((doc) => {
+                setEstadoExamenState([doc.data()])
+                console.log('pass')
             })
-
-            
-            
         })
-
-    },[])
+    }, [])
 
 
     const estadoExamen = () => {
@@ -48,17 +50,25 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
     }
 
     const mostrarPregunta = () => {
-        if(!estadoExamenState[0].estado === false) {
+        if (!estadoExamenState[0].estado === false) {
             return (
-                <Text style={{textAlign:'center'}}>Aun no esta activo el examen, espera a que el docente lo active</Text>
+                <Text style={{ textAlign: 'center' }}>Aun no esta activo el examen, espera a que el docente lo active</Text>
+            )
+        } else {
+            return(
+                <View style={styles.cardPregunta}>
+                    <Text style={styles.textNoPregunta}>Pregunta 1 de 3</Text>
+                    <Text style={styles.textPregunta}>¿Pregunta?</Text>
+                    
+                </View>
             )
         }
     }
-    
 
-    
-  return (
-    <Modal
+
+
+    return (
+        <Modal
             animationType='slide'
             visible={modalExamen}>
 
@@ -72,17 +82,31 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
                             pressed ? { opacity: 0.2 } : {},
                         ]}
 
-                        onPress={() => { console.log(estadoExamenState), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                        onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
                     >
                         <Text style={styles.txtBtnSalir}>
                             Ir a inicio
                         </Text>
                     </Pressable>
 
-                  
+                    <Pressable
+
+                        style={({ pressed }) => [
+                            { borderRadius: 10 },
+                            pressed ? { opacity: 0.2 } : {},
+                        ]}
+
+                        onPress={() => { console.log(pregunstas), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                    >
+                        <Text style={styles.txtBtnSalir}>
+                            Prueba
+                        </Text>
+                    </Pressable>
+
+
                 </View>
 
-                
+
 
                 <View style={styles.containerTituloExamen}>
 
@@ -90,17 +114,17 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
                     <Text style={styles.textSubtitulo}>Examen: {plantilla.titulo} </Text>
                     {estadoExamen()}
                 </View>
-                
+
                 <View style={styles.containerPregunta}>
-                        {mostrarPregunta()}
+                    {mostrarPregunta()}
                 </View>
 
-            
+
 
             </SafeAreaView>
 
         </Modal>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
@@ -138,24 +162,41 @@ const styles = StyleSheet.create({
     },
     textSubtitulo: {
         color: "#a0a0a0",
-        fontSize:16
+        fontSize: 16
     },
 
-    textInactivo:{
+    textInactivo: {
         color: "red",
-        fontWeight:'600'
+        fontWeight: '600'
     },
     textActivo: {
         color: "green",
         fontWeight: '600'
     },
-    containerPregunta:{
+    containerPregunta: {
         height: "100%",
         justifyContent: 'center',
-        paddingBottom:200,
+        paddingBottom: 200,
         alignItems: 'center',
-        paddingHorizontal:50,
+        paddingHorizontal: 50,
     },
+
+    cardPregunta: {
+        height: 500,
+        width: 400,
+        backgroundColor:'rgb(37, 150, 190)',
+        alignItems: 'center',
+        padding: 30,
+        borderRadius: 10,
+    },
+    textNoPregunta:{
+        fontSize:15
+    },
+    textPregunta:{
+        marginTop:20,
+        fontSize:30,
+        fontWeight: 'bold',
+    }
 
 })
 
