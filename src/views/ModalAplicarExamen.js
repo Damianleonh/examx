@@ -6,7 +6,7 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
 
 
     const estadoExamen = () => {
-        if(examen.estado === 'inactivo'){
+        if(examen.estado === false){
             return(
                 <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examen.estado}</Text> </Text>
             )

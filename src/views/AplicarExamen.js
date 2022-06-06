@@ -101,7 +101,7 @@ const AplicarExamen = ({navigation}) => {
             alumnosSelected: alumnosSelected,
             plantillaid: plantillaId,
             gradoGrupo: gradoGrupo,
-            estado:"inactivo"
+            estado:false
         }).then(()=>{
             Alert.alert("Alerta", "Examen creado correctamente")
             navigation.navigate("Home")

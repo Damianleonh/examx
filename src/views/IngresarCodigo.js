@@ -39,7 +39,6 @@ const IngresarCodigo = ({navigation}) => {
 
         const q = query(collection(db, "examenes"), where("codigoExamen", "==", codigo))
         const unsuscribe = onSnapshot(q, (querySnapshot) => {
-            let tempArr = []
             querySnapshot.forEach((doc) => {
                 updateDoc(doc.ref,{
                     alumnosSelected: arrayUnion(auth.currentUser.email)
