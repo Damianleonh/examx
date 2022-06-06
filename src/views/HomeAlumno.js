@@ -242,30 +242,32 @@ const HomeAlumno = ( {navigation} ) => {
                 <View style={styles.linea}></View>
 
                 {/* Nombre de examen y porcentaje */}
-                <View>
+                <View style={{
+                  flexDirection: 'column',
+                  flex: 1,
+                  width: 'auto'
+                }}>
                   <Text style={styles.examenTitle}>{nombrePlantillas(examen.plantillaid)}</Text>
                   <Text style={styles.examenPorc}> {calcularTiempo(examen.plantillaid)}</Text>
                 </View>
 
-
                 <View style={styles.opcionArea}>
-                <Pressable 
-                  style={({ pressed }) => [
-                    pressed ? { opacity: 0.1, padding: 1 } : {},
-                  ]}
-                  onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),setMiPlantilla(obtenerPlantilla(examen.plantillaid))}}>
-                  <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
-                </Pressable>
+                  <Pressable 
+                    style={({ pressed }) => [
+                      pressed ? { opacity: 0.1, padding: 1 } : {},
+                    ]}
+                    onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),setMiPlantilla(obtenerPlantilla(examen.plantillaid))}}>
+                    <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
+                  </Pressable>
 
-                <ModalAplicarExamen
-                modalExamen={modalExamen}
-                setModalExamen = {setModalExamen}
-                examen={examen}
-                plantilla = { miPlantilla}
-                />
+                  <ModalAplicarExamen
+                    modalExamen={modalExamen}
+                    setModalExamen = {setModalExamen}
+                    examen={examen }
+                    plantilla = {miPlantilla}
+                  />
 
-                
-              </View>
+                </View>
               </View>
             ))
           }
@@ -328,8 +330,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     height: 70,
-    paddingHorizontal: 20,
-    alignItems: 'center',
+    paddingHorizontal: 10,
     flexDirection: 'row',
     marginBottom: 10
   },
@@ -377,9 +378,10 @@ const styles = StyleSheet.create({
 },
 opcionArea: {
   position: 'relative',
-  marginLeft: 120,
+  marginLeft: 100,
   alignItems: 'center',
   justifyContent: 'center',
+  paddingLeft: 0
 },
 })
 

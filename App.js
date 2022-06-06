@@ -11,12 +11,14 @@ import { auth } from "./database/firebase";
 import { addDoc, collection, doc, setDoc, getDoc } from "firebase/firestore"
 import { db } from './firebase-config';
 
-//views
+// Global
 import Login from "./src/views/Login"
 import Home from "./src/views/Home";
+// Maestros
 import HomeAlumno from "./src/views/HomeAlumno";
 import CrearPlantilla from "./src/views/CrearPlantilla";
 import VerPlantillas from "./src/views/VerPlantillas";
+// Alumnos
 import Alumnos from "./src/views/Alumnos";
 import AplicarExamen from "./src/views/AplicarExamen";
 import HistorialExamen from "./src/views/HistorialExamen";
@@ -56,6 +58,7 @@ const AlumnoStack = () => {
       <Stack.Screen name="Home" component={HomeAlumno} />
       <Stack.Screen name="HistorialExamen" component={HistorialExamen} />
       <Stack.Screen name="IngresarCodigo" component={IngresarCodigo} />
+      
     </Stack.Navigator>
   )
 }

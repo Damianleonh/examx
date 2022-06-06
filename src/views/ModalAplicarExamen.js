@@ -1,86 +1,82 @@
 import React, { useLayoutEffect, useState, useEffect } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal, Text } from "react-native";
 import * as Haptics from 'expo-haptics';
+// Components
+import Preguntas from '../components/Preguntas';
 
 const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
-
+    console.log(plantilla)
 
     const estadoExamen = () => {
+        // false = examen inactivo | true = examen activo
         if(examen.estado === false){
-            return(
-                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examen.estado}</Text> </Text>
-            )
+            return <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examen.estado}</Text> </Text>
         }
     }
     
-
-    
   return (
     <Modal
-            animationType='slide'
-            visible={modalExamen}>
+        animationType='slide'
+        visible={modalExamen}>
 
-            <SafeAreaView style={styles.container}>
-                <View style={styles.containerBtnsPrincipales}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.containerBtnsPrincipales}>
 
-                    <Pressable
+                <Pressable
 
-                        style={({ pressed }) => [
-                            { borderRadius: 10 },
-                            pressed ? { opacity: 0.2 } : {},
-                        ]}
+                    style={({ pressed }) => [
+                        { borderRadius: 10 },
+                        pressed ? { opacity: 0.2 } : {},
+                    ]}
 
-                        onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
-                    >
-                        <Text style={styles.txtBtnSalir}>
-                            Ir a inicio
-                        </Text>
-                    </Pressable>
+                    onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                >
+                    <Text style={styles.txtBtnSalir}>
+                        Ir a inicio
+                    </Text>
+                </Pressable>
 
-                    <Pressable
+                <Pressable
 
-                        style={({ pressed }) => [
-                            { borderRadius: 10 },
-                            pressed ? { opacity: 0.2 } : {},
-                        ]}
-                        onPress={() => {
-                            Alert.alert('Finalizar Examen', '¿Seguro de finalizar el examen y recoger todos los resultados?', [
-                                {
-                                    text: 'Cancelar',
-                                    onPress: () => { return },
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'OK', onPress: () => { return }
-                                },
-                            ]), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), console.log(examen)
-                        }}
-                    >
-                        <Text style={styles.txtBtnSalir}>
-                            Comenzar Examen
-                        </Text>
-                    </Pressable>
-                </View>
+                    style={({ pressed }) => [
+                        { borderRadius: 10 },
+                        pressed ? { opacity: 0.2 } : {},
+                    ]}
+                    onPress={() => {
+                        Alert.alert('Finalizar Examen', '¿Seguro de finalizar el examen y recoger todos los resultados?', [
+                            {
+                                text: 'Cancelar',
+                                onPress: () => { return },
+                                style: 'cancel',
+                            },
+                            {
+                                text: 'OK', onPress: () => { return }
+                            },
+                        ]), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), console.log(examen)
+                    }}
+                >
+                    <Text style={styles.txtBtnSalir}>
+                        Finalizar Examen
+                    </Text>
+                </Pressable>
+            </View>
 
                 
 
-                <View style={styles.containerTituloExamen}>
+            <View style={styles.containerTituloExamen}>
 
-                    <Text style={styles.textTitulo}>Area de examen</Text>
-                    <Text style={styles.textSubtitulo}>Examen: {plantilla.titulo} </Text>
-                    {estadoExamen()}
-
-                </View>
-                <View style={styles.containerBtnEstado}>
-                </View>
-
-            
-
-            </SafeAreaView>
-
-        </Modal>
+                <Text style={styles.textTitulo}>Area de examen</Text>
+                <Text style={styles.textSubtitulo}>Examen: {plantilla.titulo} </Text>
+                {estadoExamen()}
+            </View>
+            <View>
+                <Preguntas examen={plantilla.preguntas} />
+            </View>
+        </SafeAreaView>
+    </Modal>
   )
 }
+
 
 const styles = StyleSheet.create({
     container: {
