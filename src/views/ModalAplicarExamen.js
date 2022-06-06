@@ -1,14 +1,56 @@
 import React, { useLayoutEffect, useState, useEffect } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal, Text } from "react-native";
+import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc, updateDoc, get, limit } from "firebase/firestore";
 import * as Haptics from 'expo-haptics';
+import { db } from '../../firebase-config';
+import { auth } from '../../database/firebase'
 
 const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
 
+    const [estadoExamenState,setEstadoExamenState] = useState([
+        {
+            maestro: auth.currentUser.email,
+            codigoExamen: '11111',
+            alumnosSelected: ['a', 'a'],
+            plantillaid: null,
+            gradoGrupo: null,
+            estado: null
+        }
+    ])
+    
+
+    useEffect(() => {
+        const q = query(collection(db, "examenes"), where("codigoExamen", "==", examen.codigoExamen))
+        const unsuscribe = onSnapshot(q, (querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    setEstadoExamenState([doc.data()])
+                    console.log('pass')
+            })
+
+            
+            
+        })
+
+    },[])
+
 
     const estadoExamen = () => {
-        if(examen.estado === false){
-            return(
-                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>{examen.estado}</Text> </Text>
+
+        if (!estadoExamenState[0].estado === false) {
+            return (
+                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textInactivo}>Inactivo</Text> </Text>
+            )
+        } else {
+            return (
+                <Text style={styles.textSubtitulo}>Estado: <Text style={styles.textActivo}> Activo </Text> </Text>
+            )
+        }
+    }
+
+    const mostrarPregunta = () => {
+        if(!estadoExamenState[0].estado === false) {
+            return (
+                <Text style={{textAlign:'center'}}>Aun no esta activo el examen, espera a que el docente lo active</Text>
             )
         }
     }
@@ -30,36 +72,14 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
                             pressed ? { opacity: 0.2 } : {},
                         ]}
 
-                        onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
+                        onPress={() => { console.log(estadoExamenState), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) }}
                     >
                         <Text style={styles.txtBtnSalir}>
                             Ir a inicio
                         </Text>
                     </Pressable>
 
-                    <Pressable
-
-                        style={({ pressed }) => [
-                            { borderRadius: 10 },
-                            pressed ? { opacity: 0.2 } : {},
-                        ]}
-                        onPress={() => {
-                            Alert.alert('Finalizar Examen', '¿Seguro de finalizar el examen y recoger todos los resultados?', [
-                                {
-                                    text: 'Cancelar',
-                                    onPress: () => { return },
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'OK', onPress: () => { return }
-                                },
-                            ]), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), console.log(examen)
-                        }}
-                    >
-                        <Text style={styles.txtBtnSalir}>
-                            Comenzar Examen
-                        </Text>
-                    </Pressable>
+                  
                 </View>
 
                 
@@ -69,9 +89,10 @@ const ModalAplicarExamen = ({modalExamen, setModalExamen,examen,plantilla}) => {
                     <Text style={styles.textTitulo}>Area de examen</Text>
                     <Text style={styles.textSubtitulo}>Examen: {plantilla.titulo} </Text>
                     {estadoExamen()}
-
                 </View>
-                <View style={styles.containerBtnEstado}>
+                
+                <View style={styles.containerPregunta}>
+                        {mostrarPregunta()}
                 </View>
 
             
@@ -123,6 +144,17 @@ const styles = StyleSheet.create({
     textInactivo:{
         color: "red",
         fontWeight:'600'
+    },
+    textActivo: {
+        color: "green",
+        fontWeight: '600'
+    },
+    containerPregunta:{
+        height: "100%",
+        justifyContent: 'center',
+        paddingBottom:200,
+        alignItems: 'center',
+        paddingHorizontal:50,
     },
 
 })

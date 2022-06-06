@@ -1,28 +1,7 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
-import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    View,
-    Pressable,
-    TextInput,
-    KeyboardAvoidingView,
-    Alert,
-    Modal,
-    Text,
-} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View, Pressable, TextInput, KeyboardAvoidingView, Alert, Modal, Text } from "react-native";
 import * as Haptics from "expo-haptics";
-import {
-    doc,
-    getDocs,
-    collection,
-    where,
-    query,
-    onSnapshot,
-    deleteDoc,
-    updateDoc,
-    get
-} from "firebase/firestore";
+import { doc, getDocs, collection, where, query, onSnapshot, deleteDoc, updateDoc, get, limit } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -62,104 +41,111 @@ const ModalExamen = ({ modalExamen, setModalExamen, examen, titulo }) => {
         const q = query(collection(db, "examenes"), where("codigoExamen", "==", examen.codigoExamen))
         const unsuscribe = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                if(querySnapshot.size === 1){
-                    updateDoc(doc.ref, {
-                        estado : examenState
-                    })
-                    console.log("cambio")
-                }
+                updateDoc(doc.ref, {
+                    estado: examenState
+                })
+                unsuscribe()
             })
-        })    
-        unsuscribe()
+        })
+
+
+
     }
 
     const cambioBotonesEstado = () => {
         if (examenState === false) {
-            return(<Pressable
-                style={({ pressed }) => [
-                    pressed ? { opacity: 0.2, padding: 5 } : {},
-                ]}
-                onPress={() => {
-                    Alert.alert(
-                        "Iniciar Examen",
-                        "El examen cambiara su estado a activo y se podra contestar 🤓✏️",
-                        [
-                            {
-                                text: "Cancelar",
-                                onPress: () => {
-                                    return;
-                                },
-                                style: "cancel",
-                            },
-                            {
-                                text: "OK",
-                                onPress: () => {
-                                    {  setExamenState(!examenState), cambiarEstado() }
-                                },
-                            },
-                        ]
-                    ),
-                        Haptics.notificationAsync(
-                            Haptics.NotificationFeedbackType.Success
-                        );
-                }}
-            >
-                <View style={styles.optMenuCard}>
-                    <MaterialCommunityIcons
-                        name="clock-start"
-                        size={24}
-                        color="#a0a0a0"
-                    />
+            return (
 
-                    <Text style={styles.optMenuCardTxt}>Iniciar examen</Text>
-                </View>
-            </Pressable>)
-        }else{
-            return(
                 <Pressable
-                style={({ pressed }) => [
-                    pressed ? { opacity: 0.2, padding: 5 } : {},
-                ]}
-                onPress={() => {
-                    Alert.alert(
-                        "Terminar el Examen",
-                        "El examen cambiara su estado a inactivo y se ya no se podra contestar ➡️",
-                        [
-                            {
-                                text: "Cancelar",
-                                onPress: () => {
-                                    return;
-                                },
-                                style: "cancel",
-                            },
-                            {
-                                text: "OK",
-                                onPress: () => {
-                                    { setExamenState(!examenState), cambiarEstado() }
-                                },
-                            },
-                        ]
-                    ),
-                        Haptics.notificationAsync(
-                            Haptics.NotificationFeedbackType.Success
-                        );
-                }}
-            >
-                <View style={styles.optMenuCard}>
-                    <MaterialCommunityIcons
-                        name="contain-end"
-                        size={24}
-                        color="#a0a0a0"
-                    />
 
-                    <Text style={styles.optMenuCardTxt}>Terminar examen</Text>
-                </View>
-            </Pressable>
+                    style={({ pressed }) => [
+                        pressed ? { opacity: 0.2, padding: 5 } : {},
+                    ]}
+
+                    onPress={() => {
+                        Alert.alert(
+                            "Iniciar Examen",
+                            "El examen cambiara su estado a activo y se podra contestar 🤓✏️",
+                            [
+                                {
+                                    text: "Cancelar",
+                                    onPress: () => {
+                                        return;
+                                    },
+                                    style: "cancel",
+                                },
+                                {
+                                    text: "OK",
+                                    onPress: () => {
+                                        { setExamenState(true), cambiarEstado() }
+                                    },
+                                },
+                            ]
+                        ),
+                            Haptics.notificationAsync(
+                                Haptics.NotificationFeedbackType.Success
+                            );
+                    }}
+                >
+
+                    <View style={styles.optMenuCard}>
+                        <MaterialCommunityIcons
+                            name="clock-start"
+                            size={24}
+                            color="#a0a0a0"
+                        />
+
+                        <Text style={styles.optMenuCardTxt}>Iniciar examen</Text>
+                    </View>
+
+                </Pressable>)
+        } else {
+            return (
+                <Pressable
+                    style={({ pressed }) => [
+                        pressed ? { opacity: 0.2, padding: 5 } : {},
+                    ]}
+                    onPress={() => {
+                        Alert.alert(
+                            "Terminar el Exunsuscribe()amen",
+                            "El examen cambiara su estado a inactivo y se ya no se podra contestar ➡️",
+                            [
+                                {
+                                    text: "Cancelar",
+                                    onPress: () => {
+                                        return;
+                                    },
+                                    style: "cancel",
+                                },
+                                {
+                                    text: "OK",
+                                    onPress: () => {
+                                        { setExamenState(false), cambiarEstado() }
+                                    },
+                                },
+                            ]
+                        ),
+                            Haptics.notificationAsync(
+                                Haptics.NotificationFeedbackType.Success,
+                            );
+                    }}
+                >
+                    <View style={styles.optMenuCard}>
+                        <MaterialCommunityIcons
+                            name="contain-end"
+                            size={24}
+                            color="#a0a0a0"
+                        />
+
+                        <Text style={styles.optMenuCardTxt}>Terminar examen</Text>
+                    </View>
+                </Pressable>
             )
         }
 
     };
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     return (
         <Modal
             animationType="slide"
@@ -167,6 +153,7 @@ const ModalExamen = ({ modalExamen, setModalExamen, examen, titulo }) => {
             visible={modalExamen}
         >
             <SafeAreaView style={styles.container}>
+
                 <View style={styles.containerBtnsPrincipales}>
                     <Pressable
                         style={({ pressed }) => [
@@ -211,7 +198,7 @@ const ModalExamen = ({ modalExamen, setModalExamen, examen, titulo }) => {
                                 Haptics.notificationAsync(
                                     Haptics.NotificationFeedbackType.Success
                                 ),
-                                console.log(examenState);
+                                console.log(examen);
                         }}
                     >
                         <Text style={styles.txtBtnSalir}>Comenzar Examen</Text>
@@ -221,8 +208,9 @@ const ModalExamen = ({ modalExamen, setModalExamen, examen, titulo }) => {
                 <View style={styles.containerTituloExamen}>
                     <Text style={styles.textTitulo}> {titulo} </Text>
                     <Text style={styles.textSubtitulo}>
-                        Responsable: {examenState.maestro}{" "}
+                        Responsable: {examen.maestro}{" "}
                     </Text>
+                    <Text style={styles.textSubtitulo}>Alumnos Inscritos: {examen.alumnosSelected.length}</Text>
                     {estadoExamen()}
                 </View>
 
@@ -267,14 +255,6 @@ const ModalExamen = ({ modalExamen, setModalExamen, examen, titulo }) => {
                     {cambioBotonesEstado()}
 
                 </View>
-
-
-
-
-
-
-
-
             </SafeAreaView>
         </Modal>
     );
@@ -337,6 +317,10 @@ const styles = StyleSheet.create({
 
     textInactivo: {
         color: "red",
+        fontWeight: "600",
+    },
+    textActivo: {
+        color: "green",
         fontWeight: "600",
     },
 });

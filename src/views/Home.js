@@ -57,6 +57,15 @@ const Home = ({ navigation }) => {
 
   const [tituloPlantilla, setTituloPlantilla] = useState('')
 
+  const [examenSeleccionado, setExamenSeleccionado] = useState({
+    maestro: auth.currentUser.email,
+    codigoExamen: '11111',
+    alumnosSelected: ['a','a'],
+    plantillaid: null,
+    gradoGrupo:null,
+    estado: false
+  })
+
   useEffect(() => {
     //Consulta examenes
     const q = query(collection(db, "examenes"), where("maestro", "==", auth.currentUser.email))
@@ -231,7 +240,7 @@ const Home = ({ navigation }) => {
                   style={({ pressed }) => [
                     pressed ? { opacity: 0.1, padding: 1 } : {},
                   ]}
-                  onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), setTituloPlantilla(nombrePlantillas(examen.plantillaid)) }}>
+                  onPress={() => { setModalExamen(!modalExamen), Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success), setTituloPlantilla(nombrePlantillas(examen.plantillaid), setExamenSeleccionado(examen))}}>
                   <Fontisto name="nav-icon-grid-a" size={27} color="#0F74F2" />
                 </Pressable>
 
@@ -239,7 +248,7 @@ const Home = ({ navigation }) => {
                   modalExamen={modalExamen}
                   setModalExamen = {setModalExamen}
                   idExamen = {examen.codigoExamen}
-                  examen = {examen}
+                  examen = {examenSeleccionado}
                   plantilla = {plantillas}
                   titulo= {tituloPlantilla}/>
               </View>
